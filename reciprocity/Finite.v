@@ -418,7 +418,7 @@ Proof.
   ex_mid_destruct.
   rewrite Heqh'. remember (f _) as y. destruct y as [y' Hy']. simpl.
   ex_mid_destruct.
-  assert (exist (fun x : T => P x) y' Hy' = exist P y' p).
+  assert (exist (fun x : T => P x) y' Hy' = exist (fun x : T => P x) y' p).
   apply proj1_inj. auto.
   rewrite <- H0. rewrite Heqy. rewrite Hf. auto.
   contradiction.

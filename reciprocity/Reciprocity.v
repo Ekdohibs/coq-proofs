@@ -1136,8 +1136,8 @@ Proof.
   remember (to_nat ((p - 1) / 2)) as n.
   generalize n. simple induction n0.
   rewrite empty_product. simpl. auto.
-  intros n1 H. rewrite Nat2Z.inj_succ. rewrite product_n. unfold ZpZmult.
-  rewrite Zmod_mod. fold (ZpZmult p). rewrite <- Zmult_mod_idemp_l. rewrite H.
+  intros n1 H. rewrite Nat2Z.inj_succ. rewrite product_n. unfold mlt. unfold ZpZmult.
+  rewrite Zmod_mod. fold (ZpZmult p). rewrite <- Zmult_mod_idemp_l. fold mlt. rewrite H.
   rewrite Zmult_mod_idemp_l. f_equal. rewrite pow_succ_r. rewrite Zmult_comm.
   auto. apply Nat2Z.is_nonneg.
   rewrite Z2Nat.id. auto. apply Z_div_pos. omega. destruct p_prime; omega.
@@ -1567,3 +1567,4 @@ Proof.
   rewrite <- Zmult_0_r with (n := (p - 1) / 2).
   apply Zmult_ge_compat_l. omega. omega.
 Qed.
+End Quadratic_reciprocity.
