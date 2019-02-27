@@ -5,8 +5,8 @@ Require Import BinInt. Import Z.
 Require Import Znat.
 Require Import Zeuclid. Import ZEuclid.
 Require Import Znumtheory.
-Require Import Finite. Import FiniteTypes.
-Require Import Accumulation. Import Accum.
+Require Import Reciprocity.Reciprocity.Finite. Import FiniteTypes.
+Require Import Reciprocity.Reciprocity.Accumulation. Import Accum.
 Require Import Classical.
 
 Lemma Zpos_induction (P : Z -> Prop) :
@@ -78,7 +78,7 @@ Proof.
   intros n Hpos Hodd. destruct Hodd.
   rewrite H. rewrite power_plus by omega.
   rewrite <- power_power by omega. rewrite one_pow. auto. omega.
-Qed.  
+Qed.
 
 Lemma even_mod :
   forall n : Z, Even n <-> n mod 2 = 0.
@@ -204,10 +204,10 @@ Proof.
   assert (((x * a) mod p * b) mod p = ((x * a) mod p * c) mod p).
   repeat (rewrite Zmult_mod_idemp_l). repeat (rewrite <- Zmult_assoc).
   rewrite <- Zmult_mod_idemp_r. rewrite Heq. rewrite Zmult_mod_idemp_r. auto.
-  repeat (rewrite H in H0). repeat (rewrite mul_1_l in H0). auto. 
+  repeat (rewrite H in H0). repeat (rewrite mul_1_l in H0). auto.
 Qed.
 
-Lemma over_2 : 
+Lemma over_2 :
   forall a, a mod 2 = 1 -> (a - 1) / 2 = a / 2.
 Proof.
   intros a Hodd.
@@ -250,7 +250,7 @@ Qed.
 End Z_over_pZ.
 
 Lemma card_interval_full :
-  forall a b : Z, a <= b + 1 -> 
+  forall a b : Z, a <= b + 1 ->
     cardinality {u : Z | a <= u <= b} (Z.to_nat (b - a + 1)).
 Proof.
   intros a b Hsmall.
@@ -273,7 +273,7 @@ Proof.
 Qed.
 
 Lemma card_interval :
-  forall a b : Z, a <= b -> 
+  forall a b : Z, a <= b ->
     cardinality {u : Z | a <= u <= b} (Z.to_nat (b - a + 1)).
 Proof.
   intros a b H.
@@ -354,7 +354,7 @@ Proof.
   intro x. destruct x. simpl.  rewrite Zmod_small. omega. omega.
 Qed.
 Let P'1 :
-  product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1 _  U_finite (compose (proj1_sig (P := fun k => 1 <= k <= p - 1)) f') = 
+  product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1 _  U_finite (compose (proj1_sig (P := fun k => 1 <= k <= p - 1)) f') =
   (ZpZmult p) (product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1 _  U_finite (fun x => `x))
               (product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1 _  U_finite (fun x => a)).
 Proof.
@@ -390,7 +390,7 @@ Theorem FLT :
   (a ^ (p - 1)) mod p = 1.
 Proof.
   assert (
-  (ZpZmult p) (product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1 _  U_finite (compose (proj1_sig (P := fun k => 1 <= k <= p - 1)) f')) 1 = 
+  (ZpZmult p) (product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1 _  U_finite (compose (proj1_sig (P := fun k => 1 <= k <= p - 1)) f')) 1 =
   (ZpZmult p) P'
               (product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1 _  U_finite (fun x => a))).
   unfold P'. rewrite P'1. symmetry. apply mod_1_mod.
@@ -413,7 +413,7 @@ Proof.
   unfold succ. assert (p - 2 + 1 = p - 1). omega. rewrite H. apply FLT.
   auto. auto.
 Qed.
-Lemma inv_not_0 : 
+Lemma inv_not_0 :
   forall p a : Z, prime p -> a mod p <> 0 -> (inverse p a) mod p <> 0.
 Proof.
   intros p a Hprime Hanz H. assert ((a * inverse p a) mod p = 1). apply p_inverse.
@@ -433,7 +433,7 @@ Qed.
 Lemma inv_bounds :
   forall p a : Z, prime p -> a mod p <> 0 -> 1 <= inverse p a <= p - 1.
 Proof.
-  intros. assert (inverse p a <> 0). unfold inverse. rewrite <- Zmod_mod. 
+  intros. assert (inverse p a <> 0). unfold inverse. rewrite <- Zmod_mod.
   apply inv_not_0. auto. auto.
   assert (0 <= inverse p a < p). apply Zmod_pos_bound. destruct H; omega. omega.
 Qed.
@@ -442,13 +442,13 @@ Lemma inv_mod :
 Proof.
   intros. unfold inverse. apply Zpower_mod. destruct H; omega.
 Qed.
-Lemma inv_prod : 
+Lemma inv_prod :
   forall p a b : Z, prime p -> ((inverse p a) * (inverse p b)) mod p = inverse p (a * b).
 Proof.
   intros. unfold inverse. rewrite <- Zmult_mod.
   rewrite Zmult_power. auto. destruct H; omega.
 Qed.
- 
+
 Section Wilson.
 Variable p : Z.
 Hypothesis p_prime : prime p.
@@ -462,7 +462,7 @@ Let U_finite :
   finite {x : Z | 1 <= x <= p - 1}.
 Proof.
   exists (Z.to_nat (p - 1 - 1 + 1)). apply card_interval. destruct p_prime; omega.
-Qed.  
+Qed.
 Theorem Wilson :
   product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1 _ U_finite (fun x => `x)
     = -1 mod p.
@@ -482,7 +482,7 @@ Proof.
   apply odd_mod. rewrite Zminus_mod. rewrite Z_mod_same. rewrite p_odd. auto. omega.
   rewrite Zpower_mod. f_equal. f_equal. rewrite <- minus_mod. f_equal. omega. omega.
   assert ((0 < 2)%nat). omega. remember (exist (fun x => (x < 2)%nat) (0%nat) H3) as F2Zero.
-  assert ((1 < 2)%nat). omega. remember (exist (fun x => (x < 2)%nat) (1%nat) H4) as F2One.  
+  assert ((1 < 2)%nat). omega. remember (exist (fun x => (x < 2)%nat) (1%nat) H4) as F2One.
   remember (fun a : (Fints 2) =>
     If a = F2Zero then exist (fun k => `k = inverse p `k) (exist (fun x => 1 <= x <= p - 1) 1 H) H0 else
                        exist _ (exist (fun x => 1 <= x <= p - 1) (p - 1) H1) H2) as b.
@@ -589,7 +589,7 @@ Variable p : Z.
 Hypothesis p_prime : prime p.
 Hypothesis p_odd : p mod 2 = 1.
 Variable a : Z.
-Let p_not_2 : 
+Let p_not_2 :
   p <> 2.
 Proof.
   intro. rewrite H in p_odd. rewrite Z_mod_same in p_odd. omega. omega.
@@ -674,7 +674,7 @@ Proof.
   rewrite product_ext with (g := fun x => a mod p) in H3.
   destruct (subtype_finite H2
           (fun x : {x : Z | 1 <= x <= p - 1} => proj1_sig (f' x) < `x)) as [n Hn].
-  assert (cardinality 
+  assert (cardinality
              {x : {x : Z | 1 <= x <= p - 1} | ~ proj1_sig (f' x) < `x} n).
   apply card_bijection with (b := b). auto. auto.
   assert (cardinality {x : Z | 1 <= x <= p - 1} (n + n)).
@@ -696,7 +696,7 @@ Proof.
           (fun n0 : nat =>
            cardinality {x : {x : Z | 1 <= x <= p - 1} | proj1_sig (f' x) < `x} n0) n
           Hn)
-       (fun _ : {x : {x : Z | 1 <= x <= p - 1} | proj1_sig (f' x) < `x} => a mod p) = 
+       (fun _ : {x : {x : Z | 1 <= x <= p - 1} | proj1_sig (f' x) < `x} => a mod p) =
     a ^ ((p - 1) / 2) mod p).
   assert (Hc : cardinality {x : {x : Z | 1 <= x <= p - 1} | proj1_sig (f' x) < `x} n). auto.
   apply inv_bijection in Hc. destruct Hc as [c Hc].
@@ -719,7 +719,7 @@ Qed.
 Theorem Eulers_criterion :
   (legendre p a) mod p = a ^ ((p - 1) / 2) mod p.
 Proof.
-  
+
   unfold legendre.
   case_if. auto.
   case_if. auto.
@@ -736,7 +736,7 @@ Variable p : Z.
 Hypothesis p_prime : prime p.
 Hypothesis p_odd : p mod 2 = 1.
 
-Let p_positive : 
+Let p_positive :
   0 < p.
 Proof.
   destruct p_prime. omega.
@@ -751,7 +751,7 @@ Let p_not_0 :
 Proof.
   assert (0 < p). apply p_positive. omega.
 Qed.
-Let eq_mod_2 : 
+Let eq_mod_2 :
   forall x y : Z, (x + y) mod 2 = 0 -> x mod 2 = y mod 2.
 Proof.
   intros x y H. rewrite Zplus_mod in H.
@@ -934,7 +934,7 @@ Proof with (exact p_not_0 || exact p_positive ||
     repeat (rewrite Zmult_minus_distr_l with (p := q)).
     assert (((q * p - q * (a mod p)) mod p) = p - y').
     rewrite Zminus_mod. rewrite Zmult_mod. rewrite Z_mod_same...
-    rewrite mul_0_r. rewrite Zmod_0_l. rewrite Zmult_mod_idemp_r. 
+    rewrite mul_0_r. rewrite Zmod_0_l. rewrite Zmult_mod_idemp_r.
     rewrite Ha. rewrite <- Z_mod_same with (a := p)... rewrite Zminus_mod_idemp_l.
     apply Zmod_small. omega. rewrite <- Zmult_mod_idemp_r. repeat (rewrite H1).
     assert (Odd (p - y')).
@@ -966,7 +966,7 @@ Proof.
   omega. omega. rewrite Zminus_mod. rewrite p_odd. auto. omega.
   apply Z_div_pos. omega. destruct p_prime; omega.
   rewrite Zmult_comm. rewrite Z_mod_plus_full. auto.
-  exists (fun n : {k : nat | (k < Z.to_nat ((p - 1) / 2))%nat} => 
+  exists (fun n : {k : nat | (k < Z.to_nat ((p - 1) / 2))%nat} =>
            exist _ (2 + 2 * (Z.of_nat `n)) (H0 n)).
   unfold proj1_sig. split.
   intro u. destruct u as [u' Hu']. destruct Hu' as [Hu' Hu''].
@@ -1048,7 +1048,7 @@ Let P5 :
     mlt (product Z mlt mlt_comm mlt_assoc 1 _ R_finite r) 1.
 Proof.
   assert (mlt (product Z mlt mlt_comm mlt_assoc 1 _ R_finite r) 1 =
-          mlt (product Z mlt mlt_comm mlt_assoc 1 _ R_finite r) 
+          mlt (product Z mlt mlt_comm mlt_assoc 1 _ R_finite r)
                    (mlt (product Z mlt mlt_comm mlt_assoc 1 _ R_finite (fun u => (-1) ^ (r u)))
                         (product Z mlt mlt_comm mlt_assoc 1 _ R_finite (fun u => (-1) ^ (r u))))).
   rewrite P4. auto.
@@ -1059,7 +1059,7 @@ Proof.
   remember (product Z mlt mlt_comm mlt_assoc 1
      {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0} R_finite r) as b.
   rewrite mlt_comm. rewrite mlt_assoc. rewrite mlt_comm. auto.
-Qed. 
+Qed.
 Let P6 :
   mlt P (product Z mlt mlt_comm mlt_assoc 1 _ R_finite (fun u => (-1) ^ (r u))) =
   mlt P (product Z mlt mlt_comm mlt_assoc 1 _ R_finite (fun u => q)).
@@ -1272,7 +1272,7 @@ Proof.
   rewrite Zmult_mod. destruct Hx'' as [Hx''1 Hx''2]. rewrite Hx''2. rewrite Zmult_0_r. auto.
 Qed.
 Definition EL := (product Z Zplus Zplus_comm Zplus_assoc 0 _ U_finite (fun u => (q * `u) / p)).
-Lemma EL1 : 
+Lemma EL1 :
   0 <= EL.
 Proof.
   unfold EL. apply product_property_conservation. intros. omega. omega.
@@ -1286,7 +1286,7 @@ Proof.
   rewrite Eisensteins_lemma1. unfold EL. unfold m1_pow.
   rewrite E1. auto.
 Qed.
-Lemma EL3 : 
+Lemma EL3 :
   cardinality {s : Z * Z | 1 <= fst s <= (p - 1) / 2 /\ 1 <= snd s <= (q - 1) / 2
                                                      /\ p * snd s <= q * fst s}
    (Z.to_nat EL).
@@ -1366,7 +1366,7 @@ Proof.
   rewrite <- Zmult_0_l with (n := k'). apply Zmult_le_compat_r.
   omega. omega. omega.
 Qed.
- 
+
 End Eisensteins_lemma.
 
 Section Quadratic_reciprocity.
@@ -1392,7 +1392,7 @@ Let p_not_2 :
 Proof.
   intro H. rewrite H in p_odd. discriminate.
 Qed.
-Let q_not_2 : 
+Let q_not_2 :
   q <> 2.
 Proof.
   intro H. rewrite H in q_odd. discriminate.
@@ -1421,7 +1421,7 @@ Proof.
 Qed.
 Let a := EL p p_prime p_odd q.
 Let b := EL q q_prime q_odd p.
-Let QR1 : 
+Let QR1 :
   cardinality {s : {s : Z * Z | 1 <= fst s <= (p - 1) / 2 /\ 1 <= snd s <= (q - 1) / 2} |
                                                      p * snd `s <= q * fst `s}
    (Z.to_nat a).
@@ -1433,7 +1433,7 @@ Proof.
   unfold a.
   apply EL3. omega. auto. auto.
 Qed.
-Let QR2 : 
+Let QR2 :
   cardinality {s : {s : Z * Z | 1 <= fst s <= (p - 1) / 2 /\ 1 <= snd s <= (q - 1) / 2} |
                                                      ~ (p * snd `s <= q * fst `s)}
    (Z.to_nat b).
@@ -1464,7 +1464,7 @@ Proof.
   remember (fun s : {x : Z * Z |
            1 <= fst x <= (p - 1) / 2 /\
            1 <= snd x <= (q - 1) / 2 /\ q * fst x <= p * snd x} =>
-  exist (fun s => 
+  exist (fun s =>
     1 <= snd s <= (p - 1) / 2 /\ 1 <= fst s <= (q - 1) / 2 /\ q * snd s <= p * fst s
   ) (snd `s, fst `s) (proj2_sig s)) as f.
   apply card_bijection with (b := f).
@@ -1480,7 +1480,7 @@ Proof.
   tauto.
   unfold b. apply EL3. omega. auto. auto.
 Qed.
-Let QR3 : 
+Let QR3 :
   cardinality {s : Z * Z | 1 <= fst s <= (p - 1) / 2 /\ 1 <= snd s <= (q - 1) / 2}
   (Z.to_nat a + Z.to_nat b).
 Proof.
@@ -1503,11 +1503,11 @@ Proof.
   apply Z_div_pos. omega. omega.
   transitivity ((p - 1) / 2 + (p - 1) / 2 * ((q - 1) / 2 - 1)).
   omega. rewrite Zmult_minus_distr_l. omega.
-  apply card_bijection with (b := fun s => 
+  apply card_bijection with (b := fun s =>
     exist (fun x => 1 <= x <= ((p - 1) / 2) * ((q - 1) / 2))
           (fst `s + ((p - 1) / 2) * (snd `s - 1)) (H s)).
   apply bijection_inversible.
-  
+
   assert (forall x : {x : Z | 1 <= x <= ((p - 1) / 2) * ((q - 1) / 2)},
     1 <= fst ((`x - 1) mod ((p - 1) / 2) + 1, (`x - 1) / ((p - 1) / 2) + 1) <= (p - 1) / 2 /\
     1 <= snd ((`x - 1) mod ((p - 1) / 2) + 1, (`x - 1) / ((p - 1) / 2) + 1) <= (q - 1) / 2).
@@ -1531,7 +1531,7 @@ Proof.
   assert ((x' - 1) / ((p - 1) / 2) + 1 - 1 = (x' - 1) / ((p - 1) / 2)). omega.
   rewrite H1.
   assert ((x' - 1) mod ((p - 1) / 2) + 1 +
-    (p - 1) / 2 * ((x' - 1) / ((p - 1) / 2)) = 
+    (p - 1) / 2 * ((x' - 1) / ((p - 1) / 2)) =
           (p - 1) / 2 * ((x' - 1) / ((p - 1) / 2)) + (x' - 1) mod ((p - 1) / 2) + 1).
   omega. rewrite H2.
   rewrite <- Z_div_mod_eq. omega. omega.
@@ -1547,7 +1547,7 @@ Proof.
    (T := {s : Z * Z | 1 <= fst s <= (p - 1) / 2 /\ 1 <= snd s <= (q - 1) / 2}).
   auto. auto.
 Qed.
-Let QR6 : 
+Let QR6 :
   a + b = ((p - 1) / 2) * ((q - 1) / 2).
 Proof.
   assert (0 <= a). apply EL1. omega. assert (0 <= b). apply EL1. omega.

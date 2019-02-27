@@ -1,6 +1,6 @@
 Module Accum.
 
-Require Import Finite. Import FiniteTypes.
+Require Import Reciprocity.Reciprocity.Finite. Import FiniteTypes.
 Require Import Le. Require Import Lt. Require Import Plus.
 Require Import Omega.
 Require Import Classical. Require Import ClassicalDescription.
@@ -111,12 +111,12 @@ Proof.
 Qed.
 
 Theorem prod_unique_n :
-  forall (n  : nat) (I : Type) (f : I -> T) 
+  forall (n  : nat) (I : Type) (f : I -> T)
      (b  : Fints n -> I) (Hb  : bijection b )
      (b' : Fints n -> I) (Hb' : bijection b'),
   prod n I b Hb f = prod n I b' Hb' f.
 Proof.
-  apply (induction_double (fun n => forall (I : Type) (f : I -> T) 
+  apply (induction_double (fun n => forall (I : Type) (f : I -> T)
      (b  : Fints n -> I) (Hb  : bijection b )
      (b' : Fints n -> I) (Hb' : bijection b'),
   prod n I b Hb f = prod n I b' Hb' f)).
@@ -139,7 +139,7 @@ Proof.
      (b' (Fints_coerce (le_n_Sn n0) k)) (bijection_restriction1 Hb' k)) as c'.
   clear Heqc'.
   destruct (classic (b (Fints_last n0) = b' (Fints_last n0))).
-  f_equal. destruct H0. auto. destruct H0. auto. 
+  f_equal. destruct H0. auto. destruct H0. auto.
   assert (Hbijc : bijection c). auto.
   destruct Hbijc as [Hinjc Hsurjc].
   assert (Hbijc' : bijection c'). auto.
@@ -156,7 +156,7 @@ Proof.
   rewrite Heqd.
   apply bij_compose. auto. apply exchange_bijective.
   assert (prod (S n1) {p : I | p <> b (Fints_last (S n1))} c Hc
-  (fun x0 : {p : I | p <> b (Fints_last (S n1))} => f `x0) = 
+  (fun x0 : {p : I | p <> b (Fints_last (S n1))} => f `x0) =
          prod (S n1) {p : I | p <> b (Fints_last (S n1))} d Hd
   (fun x0 : {p : I | p <> b (Fints_last (S n1))} => f `x0)).
   apply H. rewrite H1.
@@ -165,7 +165,7 @@ Proof.
   rewrite Heqd'.
   apply bij_compose. auto. apply exchange_bijective.
   assert (prod (S n1) {p : I | p <> b' (Fints_last (S n1))} c' Hc'
-  (fun x0 : {p : I | p <> b' (Fints_last (S n1))} => f `x0) = 
+  (fun x0 : {p : I | p <> b' (Fints_last (S n1))} => f `x0) =
          prod (S n1) {p : I | p <> b' (Fints_last (S n1))} d' Hd'
   (fun x0 : {p : I | p <> b' (Fints_last (S n1))} => f `x0)).
   apply H. rewrite H2.
@@ -197,7 +197,7 @@ Proof.
   split. intros x1 x2 He. rewrite Heqd'' in He.
   apply proj1_inj in He. simpl in He. apply proj1_inj in He. simpl in He.
   apply proj1_inj in He. apply Hd' in He. unfold Fints_coerce in He.
-  apply proj1_inj in He. simpl in He. apply proj1_inj in He. auto. 
+  apply proj1_inj in He. simpl in He. apply proj1_inj in He. auto.
   intro y0.
   assert (``y0 <> (b' (Fints_last (S n1)))).
   destruct y0 as [y0' Hy0']. simpl. rewrite Heqd in Hy0'.
@@ -210,7 +210,7 @@ Proof.
   apply le_lt_or_eq in H5. destruct H5.
   exists (exist (fun p => p < n1) x0' H5).
   rewrite Heqd''. apply proj1_inj. simpl. apply proj1_inj. simpl.
-  apply proj1_inj in H4. simpl in H4. rewrite <- H4. 
+  apply proj1_inj in H4. simpl in H4. rewrite <- H4.
   apply proj1_inj. f_equal. unfold Fints_coerce. apply proj1_inj. auto.
   destruct y0 as [y0' Hy0']. destruct y0' as [y0'' Hy0''].
   simpl in *. apply proj1_inj in H4. simpl in H4. exfalso.
@@ -389,7 +389,7 @@ Qed.
 Lemma product_eq_n (R : T -> T -> Prop)
     (Hc : forall x1 x2 y1 y2 : T, R x1 x2 -> R y1 y2 -> R (x1 * y1) (x2 * y2))
     (He : R e e) :
-  forall (n : nat) (f g : (Fints n) -> T), 
+  forall (n : nat) (f g : (Fints n) -> T),
     (forall k : (Fints n), R (f k) (g k)) ->
       R (product _ (Fints_finite n) f) (product _ (Fints_finite n) g).
 Proof.
@@ -449,7 +449,7 @@ Qed.
 
 Lemma product_split (I : Type) (HI : finite I) (f : I -> T) (P : I -> Prop) :
   product I HI f =
-   (product {x : I | P x} (subtype_finite HI _) (fun x => f `x)) * 
+   (product {x : I | P x} (subtype_finite HI _) (fun x => f `x)) *
    (product {x : I | ~ P x} (subtype_finite HI _) (fun x => f `x)).
 Proof.
   assert (Hn : finite {x : I | P x}). apply subtype_finite. auto.
