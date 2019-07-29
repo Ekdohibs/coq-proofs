@@ -1,9 +1,9 @@
-Module FiniteTypes.
-
 Require Import ClassicalDescription.
 Require Import ProofIrrelevance.
 Require Import Le. Require Import Lt. Require Import Plus.
 Require Import Omega.
+Module FiniteTypes.
+
 Notation "'If' P 'then' x 'else' y" := 
   (if (excluded_middle_informative P) then x else y) (at level 200).
 Ltac case_if :=
