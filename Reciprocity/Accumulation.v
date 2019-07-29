@@ -1,10 +1,10 @@
-Module Accum.
-
 Require Import Reciprocity.Reciprocity.Finite. Import FiniteTypes.
 Require Import Le. Require Import Lt. Require Import Plus.
 Require Import Omega.
 Require Import Classical. Require Import ClassicalDescription.
 Require Import Description.
+
+Module Accum.
 
 Definition exchange (T : Type) (x y : T) (k : T) :=
   If k = x then y else If k = y then x else k.
