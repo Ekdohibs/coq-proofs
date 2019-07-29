@@ -1,0 +1,26 @@
+opam-version: "2.0"
+maintainer: ""
+homepage: "https://github.com/Ekdohibs/coq-proofs"
+bug-reports: "https://github.com/Ekdohibs/coq-proofs/issues"
+dev-repo: "git+https://github.com/Ekdohibs/coq-proofs.git"
+license: "MIT"
+authors: [
+  "Nathanaël Courant"
+]
+build: [
+  ["./configure.sh"]
+  [make "-j%{jobs}%"]
+]
+install: [
+  [make "install"]
+]
+remove: ["rm" "-R" "%{lib}%/coq/user-contrib/Reciprocity"]
+depends: [
+  "coq" {>= "8.6.1"}
+]
+description:"""
+Various proofs in Coq. As of now, only contains the proof of the theorem of quadratic reciprocity.
+"""
+url {
+  src: "git+https://github.com/Ekdohibs/coq-proofs.git"
+}
