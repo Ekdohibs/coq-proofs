@@ -8,6 +8,7 @@ Require Import Znumtheory.
 Require Import Reciprocity.Reciprocity.Finite. Import FiniteTypes.
 Require Import Reciprocity.Reciprocity.Accumulation. Import Accum.
 Require Import Classical.
+Require Import Lia.
 
 Lemma Zpos_induction (P : Z -> Prop) :
   P 0 ->
@@ -27,7 +28,7 @@ Proof.
   intros x p.
   apply (Zpos_induction (fun n => prime p -> (p | x ^ n) -> (p | x))).
   simpl. intros _ H. destruct H. exists (x * x0). rewrite <- Zmult_assoc.
-  rewrite <- H. omega.
+  rewrite <- H. apply Zred_factor0.
   intros n Hpos Hrec Hprime Hdiv.
   rewrite pow_succ_r in Hdiv by auto. apply prime_mult in Hdiv.
   destruct Hdiv. auto. auto. auto.
@@ -41,14 +42,14 @@ Proof.
   intro H. rewrite pow_0_r. rewrite mul_1_l. auto.
   intros n Hnpos Hrec Hmpos.
   rewrite add_succ_l. rewrite pow_succ_r. rewrite pow_succ_r by auto.
-  rewrite <- Zmult_assoc. f_equal. auto. omega.
+  rewrite <- Zmult_assoc. f_equal. auto. lia.
 Qed.
 
 Lemma one_pow :
   forall n, 0 <= n -> 1 ^ n = 1.
 Proof.
   apply (Zpos_induction (fun n => 1 ^ n = 1)).
-  auto. intros n Hpos Hrec. rewrite pow_succ_r by auto. rewrite Hrec. omega.
+  auto. intros n Hpos Hrec. rewrite pow_succ_r by auto. rewrite Hrec. lia.
 Qed.
 
 Lemma power_power :
@@ -69,15 +70,15 @@ Lemma minus_one_pow_even :
 Proof.
   intros n Hpos Heven. destruct Heven.
   rewrite H.
-  rewrite <- power_power by omega. apply one_pow. omega.
+  rewrite <- power_power by lia. apply one_pow. lia.
 Qed.
 
 Lemma minus_one_pow_odd :
   forall n : Z, 0 <= n -> Odd n -> (-1) ^ n = -1.
 Proof.
   intros n Hpos Hodd. destruct Hodd.
-  rewrite H. rewrite power_plus by omega.
-  rewrite <- power_power by omega. rewrite one_pow. auto. omega.
+  rewrite H. rewrite power_plus by lia.
+  rewrite <- power_power by lia. rewrite one_pow. auto. lia.
 Qed.
 
 Lemma even_mod :
@@ -86,7 +87,7 @@ Proof.
   intro n. split.
   intro Heven. destruct Heven. rewrite H. rewrite Zmult_mod.
   auto.
-  intro Hmod. exists (n / 2). apply Z_div_exact_2. omega. auto.
+  intro Hmod. exists (n / 2). apply Z_div_exact_2. lia. auto.
 Qed.
 
 Lemma odd_mod :
@@ -96,7 +97,7 @@ Proof.
   intro Hodd. destruct Hodd. rewrite H. rewrite Zplus_comm.
   rewrite Zmult_comm. rewrite Z_mod_plus_full. auto.
   intro Hmod. exists (n / 2). rewrite <- Hmod. apply Z_div_mod_eq.
-  omega.
+  lia.
 Qed.
 
 Lemma even_or_odd n :
@@ -111,20 +112,20 @@ Lemma minus_one_pow_mod_2 :
 Proof.
   intros n m Hnpos Hmpos.
   destruct (even_or_odd n). assert (n mod 2 = 0). apply even_mod. auto.
-  rewrite H0. rewrite minus_one_pow_even; [ | omega | auto].
+  rewrite H0. rewrite minus_one_pow_even; [ | lia | auto].
   destruct (even_or_odd m). assert (m mod 2 = 0). apply even_mod. auto.
-  rewrite H2. rewrite minus_one_pow_even; [ | omega | auto].
+  rewrite H2. rewrite minus_one_pow_even; [ | lia | auto].
   tauto.
   assert (m mod 2 = 1). apply odd_mod. auto.
-  rewrite H2. rewrite minus_one_pow_odd; [ | omega | auto].
+  rewrite H2. rewrite minus_one_pow_odd; [ | lia | auto].
   split. intro. discriminate. intro. discriminate.
   assert (n mod 2 = 1). apply odd_mod. auto.
-  rewrite H0. rewrite minus_one_pow_odd; [ | omega | auto].
+  rewrite H0. rewrite minus_one_pow_odd; [ | lia | auto].
   destruct (even_or_odd m). assert (m mod 2 = 0). apply even_mod. auto.
-  rewrite H2. rewrite minus_one_pow_even; [ | omega | auto].
+  rewrite H2. rewrite minus_one_pow_even; [ | lia | auto].
   split. intro. discriminate. intro. discriminate.
   assert (m mod 2 = 1). apply odd_mod. auto.
-  rewrite H2. rewrite minus_one_pow_odd; [ | omega | auto].
+  rewrite H2. rewrite minus_one_pow_odd; [ | lia | auto].
   tauto.
 Qed.
 
@@ -134,17 +135,17 @@ Lemma m1_pow_1_or_m1 :
 Proof.
   intro n.
   destruct (even_or_odd n).
-  left. unfold m1_pow. assert (n mod 2 = 0). apply even_mod. auto. omega.
-  right. unfold m1_pow. assert (n mod 2 = 1). apply odd_mod. auto. omega.
+  left. unfold m1_pow. assert (n mod 2 = 0). apply even_mod. auto. lia.
+  right. unfold m1_pow. assert (n mod 2 = 1). apply odd_mod. auto. lia.
 Qed.
 Lemma m1_pow_compatible :
   forall n : Z, n >= 0 -> (-1) ^ n = m1_pow n.
 Proof.
   intros n H. destruct (even_or_odd n).
-  rewrite minus_one_pow_even by (omega || auto).
-  unfold m1_pow. assert (n mod 2 = 0). apply even_mod. auto. omega.
-  rewrite minus_one_pow_odd by (omega || auto).
-  unfold m1_pow. assert (n mod 2 = 1). apply odd_mod. auto. omega.
+  rewrite minus_one_pow_even by (lia || auto).
+  unfold m1_pow. assert (n mod 2 = 0). apply even_mod. auto. lia.
+  rewrite minus_one_pow_odd by (lia || auto).
+  unfold m1_pow. assert (n mod 2 = 1). apply odd_mod. auto. lia.
 Qed.
 Lemma m1_pow_morphism :
   forall n m : Z, m1_pow (n + m) = m1_pow n * m1_pow m.
@@ -162,12 +163,12 @@ Lemma minus_mod :
   forall n m, 0 < n < m -> (-n) mod m = m - n.
 Proof.
   intros n m H.
-  assert (0 < m). omega.
-  assert (0 <= m - n < m). split. omega. omega.
+  assert (0 < m). lia.
+  assert (0 <= m - n < m). split. lia. lia.
   assert ((m - n) mod m = m - n).
   apply Zmod_small. auto.
   rewrite <- H2. rewrite <- Zminus_mod_idemp_l.
-  rewrite Z_mod_same. auto. omega.
+  rewrite Z_mod_same. auto. lia.
 Qed.
 
 Lemma mod_eq_div :
@@ -178,7 +179,7 @@ Proof.
   intro H. apply Zmod_divide. auto. rewrite Zminus_mod.
   rewrite H. rewrite Zminus_diag. auto.
   intro H. destruct H.
-  assert (a = b + x * n). omega.
+  assert (a = b + x * n). lia.
   rewrite H0. apply Z_mod_plus_full.
 Qed.
 
@@ -190,9 +191,9 @@ Proof.
   apply prime_rel_prime. auto. intro H. apply Zdivide_mod in H. contradiction.
   apply rel_prime_bezout in H. destruct H.
   exists v. assert ((u * p + v * a) mod p = 1 mod p). f_equal. auto.
-  rewrite Zmod_1_l in H0 by (destruct Hprime; omega).
+  rewrite Zmod_1_l in H0 by (destruct Hprime; lia).
   rewrite <- Zplus_mod_idemp_l in H0.
-  rewrite Zmult_mod in H0. rewrite Z_mod_same in H0 by (destruct Hprime; omega).
+  rewrite Zmult_mod in H0. rewrite Z_mod_same in H0 by (destruct Hprime; lia).
   rewrite Zmult_0_r in H0. rewrite Zmod_0_l in H0. auto.
 Qed.
 
@@ -211,13 +212,13 @@ Lemma over_2 :
   forall a, a mod 2 = 1 -> (a - 1) / 2 = a / 2.
 Proof.
   intros a Hodd.
-  apply mul_reg_l with (p := 2). omega.
+  apply mul_reg_l with (p := 2). lia.
   assert (2 * ((a - 1) / 2) = a - 1 - (a - 1) mod 2).
-  rewrite Zmod_eq_full. omega. omega.
+  rewrite Zmod_eq_full. lia. lia.
   assert (2 * (a / 2) = a - a mod 2).
-  rewrite Zmod_eq_full. omega. omega.
+  rewrite Zmod_eq_full. lia. lia.
   rewrite H. rewrite H0. rewrite Hodd. rewrite <- Zminus_mod_idemp_l.
-  rewrite Hodd. simpl. rewrite Zmod_0_l. omega.
+  rewrite Hodd. simpl. rewrite Zmod_0_l. lia.
 Qed.
 
 Section Z_over_pZ.
@@ -239,7 +240,7 @@ Qed.
 Lemma one_idemp :
   ZpZmult 1 1 = 1.
 Proof.
-  unfold ZpZmult. simpl. apply Zmod_1_l. destruct p_prime. omega.
+  unfold ZpZmult. simpl. apply Zmod_1_l. destruct p_prime. lia.
 Qed.
 Lemma mod_1_mod :
   forall x y : Z, ZpZmult x y = ZpZmult (ZpZmult x y) 1.
@@ -256,20 +257,20 @@ Proof.
   intros a b Hsmall.
   assert (forall u : {u : Z | a <= u <= b}, (Z.to_nat (`u - a) < Z.to_nat (b - a + 1))%nat).
   intro u. destruct u as [u' Hu']. simpl.
-  apply Z2Nat.inj_lt. omega. omega. omega.
+  apply Z2Nat.inj_lt. lia. lia. lia.
   exists (fun u => exist _ (Z.to_nat (`u - a)) (H u)).
   apply bijection_inversible.
   assert (forall x : {x : nat | (x < Z.to_nat (b - a + 1)) % nat}, a <= a + Z.of_nat `x <= b).
   intro x. destruct x as [x' Hx']. unfold proj1_sig.
   assert (0 <= Z.of_nat x' < b - a + 1). split. apply Nat2Z.is_nonneg.
-  apply Nat2Z.inj_lt in Hx'. rewrite Z2Nat.id in Hx'. auto. omega.
-  omega.
+  apply Nat2Z.inj_lt in Hx'. rewrite Z2Nat.id in Hx'. auto. lia.
+  lia.
   exists (fun x => exist _ (a + Z.of_nat `x) (H0 x)).
   split.
   intro x. destruct x as [x' Hx']. apply proj1_inj. unfold proj1_sig.
-  rewrite Z2Nat.id. omega. omega.
+  rewrite Z2Nat.id. lia. lia.
   intro y. destruct y as [y' Hy']. apply proj1_inj. unfold proj1_sig.
-  rewrite <- Nat2Z.id. f_equal. omega.
+  rewrite <- Nat2Z.id. f_equal. lia.
 Qed.
 
 Lemma card_interval :
@@ -277,7 +278,7 @@ Lemma card_interval :
     cardinality {u : Z | a <= u <= b} (Z.to_nat (b - a + 1)).
 Proof.
   intros a b H.
-  apply card_interval_full. omega.
+  apply card_interval_full. lia.
 Qed.
 
 Section FLT.
@@ -289,7 +290,7 @@ Hypothesis a_not_0 : a mod p <> 0.
 Let f (u : {u : Z | 1 <= u <= p - 1}) := (a * `u) mod p.
 Let f'_exists :
   forall u, 1 <= f u <= p - 1.
-Proof with ((destruct p_prime; omega) || auto).
+Proof with ((destruct p_prime; lia) || auto).
   intro u. destruct u as [u' Hu']. unfold f. simpl.
   assert (0 <= (a * u' mod p) < p).
   apply mod_pos_bound...
@@ -297,7 +298,7 @@ Proof with ((destruct p_prime; omega) || auto).
   intro H1. apply Zmod_divide in H1... apply prime_mult in H1...
   destruct H1. apply Zdivide_mod in H0. contradiction.
   apply Zdivide_mod in H0. rewrite Zmod_small in H0...
-  omega.
+  lia.
 Qed.
 Let f' u := exist (fun k => 1 <= k <= p - 1) (f u) (f'_exists u).
 Let f'_injective :
@@ -306,12 +307,12 @@ Proof.
   intros u1 u2 H. destruct u1 as [u1' Hu1']. destruct u2 as [u2' Hu2'].
   unfold f' in H. apply proj1_inj in H. simpl in H.
   apply proj1_inj. simpl. unfold f in H. simpl in H.
-  apply simpl_mod_p in H. repeat (rewrite Zmod_small in H by omega). auto.
+  apply simpl_mod_p in H. repeat (rewrite Zmod_small in H by lia). auto.
   auto. auto.
 Qed.
 Let f'_surjective :
   surjection f'.
-Proof with ((destruct p_prime; omega) || auto).
+Proof with ((destruct p_prime; lia) || auto).
   intro y. destruct y as [y' Hy'].
   destruct (not_0_inversible_mod_p a p p_prime a_not_0) as [a' Ha'].
   assert (1 <= (a' * y') mod p <= p - 1).
@@ -321,20 +322,20 @@ Proof with ((destruct p_prime; omega) || auto).
   rewrite Zmult_0_r. rewrite Zmod_0_l. auto.
   rewrite Zmult_assoc in H0. rewrite Zmult_comm with (m := a') in H0.
   rewrite <- Zmult_mod_idemp_l in H0. rewrite Ha' in H0.
-  rewrite Zmult_1_l in H0. rewrite Zmod_small in H0. omega. omega.
-  omega.
+  rewrite Zmult_1_l in H0. rewrite Zmod_small in H0. lia. lia.
+  lia.
   exists (exist _ ((a' * y') mod p) H).
   unfold f'. unfold f. simpl. apply proj1_inj. simpl.
   rewrite Zmult_mod_idemp_r. rewrite Zmult_assoc. rewrite Zmult_comm with (m := a').
   rewrite <- Zmult_mod_idemp_l. rewrite Ha'. rewrite Zmult_1_l.
-  apply Zmod_small. omega.
+  apply Zmod_small. lia.
 Qed.
 Let card_U :
   cardinality {u : Z | 1 <= u <= p - 1} (Z.to_nat (p - 1)).
 Proof.
   assert (cardinality {u : Z | 1 <= u <= p - 1} (Z.to_nat (p - 1 - 1 + 1))).
-  apply card_interval. destruct p_prime; omega.
-  assert (p - 1 - 1 + 1 = p - 1). omega. rewrite H0 in H. auto.
+  apply card_interval. destruct p_prime; lia.
+  assert (p - 1 - 1 + 1 = p - 1). lia. rewrite H0 in H. auto.
 Qed.
 Let U_finite :
   finite {u : Z | 1 <= u <= p - 1}.
@@ -350,8 +351,8 @@ Proof.
   intros x y Hxnz Hynz. unfold ZpZmult. rewrite Zmod_mod.
   intro H. apply Zmod_divide in H. apply prime_mult in H.
   destruct H. apply Zdivide_mod in H. contradiction. apply Zdivide_mod in H. contradiction.
-  auto. destruct p_prime; omega. rewrite Zmod_1_l. omega. destruct p_prime; omega.
-  intro x. destruct x. simpl.  rewrite Zmod_small. omega. omega.
+  auto. destruct p_prime; lia. rewrite Zmod_1_l. lia. destruct p_prime; lia.
+  intro x. destruct x. simpl.  rewrite Zmod_small. lia. lia.
 Qed.
 Let P'1 :
   product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1 _  U_finite (compose (proj1_sig (P := fun k => 1 <= k <= p - 1)) f') =
@@ -384,7 +385,7 @@ Proof.
   unfold ZpZmult. rewrite Zmod_mod. rewrite Zmult_mod. unfold ZpZmult in H.
   rewrite H. rewrite <- Zmult_mod. f_equal.
   rewrite pow_succ_r. apply Zmult_comm. apply Nat2Z.is_nonneg.
-  rewrite Z2Nat.id. auto. destruct p_prime; omega.
+  rewrite Z2Nat.id. auto. destruct p_prime; lia.
 Qed.
 Theorem FLT :
   (a ^ (p - 1)) mod p = 1.
@@ -399,7 +400,7 @@ Proof.
   apply simpl_mod_p in H.
   fold (ZpZmult p) in H.
   rewrite P'3 in H. rewrite Zmod_1_l in H. auto.
-  destruct p_prime; omega. auto. apply P'_not_0.
+  destruct p_prime; lia. auto. apply P'_not_0.
 Qed.
 End FLT.
 Definition inverse (p : Z) (a : Z) :=
@@ -409,8 +410,8 @@ Lemma p_inverse :
 Proof.
   intros p a Hprime Hanz.
   unfold inverse. rewrite Zmult_mod_idemp_r.
-  rewrite <- pow_succ_r by (destruct Hprime; omega).
-  unfold succ. assert (p - 2 + 1 = p - 1). omega. rewrite H. apply FLT.
+  rewrite <- pow_succ_r by (destruct Hprime; lia).
+  unfold succ. assert (p - 2 + 1 = p - 1). lia. rewrite H. apply FLT.
   auto. auto.
 Qed.
 Lemma inv_not_0 :
@@ -435,18 +436,18 @@ Lemma inv_bounds :
 Proof.
   intros. assert (inverse p a <> 0). unfold inverse. rewrite <- Zmod_mod.
   apply inv_not_0. auto. auto.
-  assert (0 <= inverse p a < p). apply Zmod_pos_bound. destruct H; omega. omega.
+  assert (0 <= inverse p a < p). apply Zmod_pos_bound. destruct H; lia. lia.
 Qed.
 Lemma inv_mod :
   forall p a : Z, prime p -> inverse p a = inverse p (a mod p).
 Proof.
-  intros. unfold inverse. apply Zpower_mod. destruct H; omega.
+  intros. unfold inverse. apply Zpower_mod. destruct H; lia.
 Qed.
 Lemma inv_prod :
   forall p a b : Z, prime p -> ((inverse p a) * (inverse p b)) mod p = inverse p (a * b).
 Proof.
   intros. unfold inverse. rewrite <- Zmult_mod.
-  rewrite Zmult_power. auto. destruct H; omega.
+  rewrite Zmult_power. auto. destruct H; lia.
 Qed.
 
 Section Wilson.
@@ -456,12 +457,12 @@ Hypothesis p_odd : p mod 2 = 1.
 Let p_not_2 :
   p <> 2.
 Proof.
-  intro. rewrite H in p_odd. rewrite Z_mod_same in p_odd. omega. omega.
+  intro. rewrite H in p_odd. rewrite Z_mod_same in p_odd. lia. lia.
 Qed.
 Let U_finite :
   finite {x : Z | 1 <= x <= p - 1}.
 Proof.
-  exists (Z.to_nat (p - 1 - 1 + 1)). apply card_interval. destruct p_prime; omega.
+  exists (Z.to_nat (p - 1 - 1 + 1)). apply card_interval. destruct p_prime; lia.
 Qed.
 Theorem Wilson :
   product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1 _ U_finite (fun x => `x)
@@ -469,20 +470,20 @@ Theorem Wilson :
 Proof.
   rewrite product_split with (P := fun x => `x = inverse p `x);
   [ | (apply one_idemp; auto) | (intros; symmetry; rewrite ZpZmult_comm with (x := 1); apply mod_1_mod) ].
-  assert (1 <= 1 <= p - 1). destruct p_prime; omega.
+  assert (1 <= 1 <= p - 1). destruct p_prime; lia.
   assert (proj1_sig (exist (fun x => 1 <= x <= p - 1) 1 H) =
       inverse p (proj1_sig (exist (fun x => 1 <= x <= p - 1) 1 H))).
-  simpl. unfold inverse. rewrite one_pow by (destruct p_prime; omega).
-  rewrite Zmod_1_l by (destruct p_prime; omega). auto.
-  assert (1 <= p - 1 <= p - 1). destruct p_prime; omega.
+  simpl. unfold inverse. rewrite one_pow by (destruct p_prime; lia).
+  rewrite Zmod_1_l by (destruct p_prime; lia). auto.
+  assert (1 <= p - 1 <= p - 1). destruct p_prime; lia.
    assert (proj1_sig (exist (fun x => 1 <= x <= p - 1) (p - 1) H1) =
       inverse p (proj1_sig (exist (fun x => 1 <= x <= p - 1) (p - 1) H1))).
   simpl. unfold inverse. transitivity ((-1) ^ (p - 2) mod p).
-  rewrite minus_one_pow_odd. rewrite <- minus_mod. f_equal. omega. omega.
-  apply odd_mod. rewrite Zminus_mod. rewrite Z_mod_same. rewrite p_odd. auto. omega.
-  rewrite Zpower_mod. f_equal. f_equal. rewrite <- minus_mod. f_equal. omega. omega.
-  assert ((0 < 2)%nat). omega. remember (exist (fun x => (x < 2)%nat) (0%nat) H3) as F2Zero.
-  assert ((1 < 2)%nat). omega. remember (exist (fun x => (x < 2)%nat) (1%nat) H4) as F2One.
+  rewrite minus_one_pow_odd. rewrite <- minus_mod. f_equal. lia. lia.
+  apply odd_mod. rewrite Zminus_mod. rewrite Z_mod_same. rewrite p_odd. auto. lia.
+  rewrite Zpower_mod. f_equal. f_equal. rewrite <- minus_mod. f_equal. lia. lia.
+  assert ((0 < 2)%nat). lia. remember (exist (fun x => (x < 2)%nat) (0%nat) H3) as F2Zero.
+  assert ((1 < 2)%nat). lia. remember (exist (fun x => (x < 2)%nat) (1%nat) H4) as F2One.
   remember (fun a : (Fints 2) =>
     If a = F2Zero then exist (fun k => `k = inverse p `k) (exist (fun x => 1 <= x <= p - 1) 1 H) H0 else
                        exist _ (exist (fun x => 1 <= x <= p - 1) (p - 1) H1) H2) as b.
@@ -490,28 +491,28 @@ Proof.
   apply bijection_inversible.
   exists (fun x => If ``x = 1 then F2Zero else F2One).
   split. intro a. rewrite Heqb. ex_mid_destruct. ex_mid_destruct. auto.
-  simpl in e. exfalso. assert (p <> 2). apply p_not_2. omega.
-  ex_mid_destruct. simpl in n. omega. simpl in n. destruct a as [a' Ha'].
+  simpl in e. exfalso. assert (p <> 2). apply p_not_2. lia.
+  ex_mid_destruct. simpl in n. lia. simpl in n. destruct a as [a' Ha'].
   apply proj1_inj. rewrite HeqF2One. simpl. apply proj1_inj_neg in n0.
-  rewrite HeqF2Zero in n0. simpl in n0. omega.
+  rewrite HeqF2Zero in n0. simpl in n0. lia.
   intro x. rewrite Heqb. ex_mid_destruct. ex_mid_destruct.
   apply proj1_inj. simpl. apply proj1_inj. simpl. auto.
   rewrite HeqF2One in e. rewrite HeqF2Zero in e. discriminate.
   ex_mid_destruct. contradict n. auto.
   destruct x as [x' Hx']. destruct x' as [x'' Hx'']. apply proj1_inj. simpl.
   apply proj1_inj. simpl in *.
-  assert (x'' mod p <> 0). rewrite Zmod_small. omega. omega.
+  assert (x'' mod p <> 0). rewrite Zmod_small. lia. lia.
   assert ((x'' * (inverse p x'') - 1) mod p = 0).
   rewrite Zminus_mod. rewrite p_inverse. rewrite Zminus_mod_idemp_r.
   simpl. rewrite Zmod_0_l. auto. auto. auto.
   rewrite <- Hx' in H6.
   assert ((x'' - 1) * (x'' + 1) mod p = 0). rewrite <- H6.
   f_equal. rewrite Zmult_minus_distr_r. repeat (rewrite Zmult_plus_distr_r).
-  omega. apply Zmod_divide in H7. apply prime_mult in H7.
-  destruct H7. apply Zdivide_mod in H7. rewrite Zmod_small in H7. omega.
-  omega. apply Zdivide_mod in H7. assert (((x'' + 1) - 1) mod p = p - 1).
+  lia. apply Zmod_divide in H7. apply prime_mult in H7.
+  destruct H7. apply Zdivide_mod in H7. rewrite Zmod_small in H7. lia.
+  lia. apply Zdivide_mod in H7. assert (((x'' + 1) - 1) mod p = p - 1).
   rewrite Zminus_mod. rewrite H7. rewrite Zmod_1_l. apply minus_mod.
-  omega. omega. rewrite Zmod_small in H8. omega. omega. auto. omega.
+  lia. lia. rewrite Zmod_small in H8. lia. lia. auto. lia.
   rewrite product_bij with (b := b) (HJ := Fints_finite 2) by auto.
   rewrite product_n. rewrite product_n. rewrite empty_product.
   unfold compose. rewrite Heqb.
@@ -523,21 +524,21 @@ Proof.
   assert (c_ex1 : forall x : {x : Z | 1 <= x <= p - 1},
     1 <= inverse p `x <= p - 1).
   intro x. destruct x as [x' Hx'].
-  simpl in *. apply inv_bounds. auto. rewrite Zmod_small. omega. omega.
+  simpl in *. apply inv_bounds. auto. rewrite Zmod_small. lia. lia.
   remember (fun x => exist (fun k => 1 <= k <= p - 1) (inverse p `x) (c_ex1 x)) as c1.
   assert (c_ex2 : forall x : {x : {x : Z | 1 <= x <= p - 1} | `x <> inverse p `x},
             proj1_sig (c1 `x) <>
        inverse p (proj1_sig (c1 `x))).
   rewrite Heqc1.
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx''].
-  simpl in *. rewrite inv_inv. rewrite Zmod_small. auto. omega. auto. rewrite Zmod_small. omega. omega.
+  simpl in *. rewrite inv_inv. rewrite Zmod_small. auto. lia. auto. rewrite Zmod_small. lia. lia.
   remember (fun x => exist (fun k => `k <> inverse p `k) (c1 `x) (c_ex2 x)) as c2.
   assert (c_ex3 : forall x : {x : {x : {x : Z | 1 <= x <= p - 1} | `x <> inverse p `x} |
         ``x < inverse p ``x},
     ~ (proj1_sig (proj1_sig (c2 `x)) < inverse p (proj1_sig (proj1_sig (c2 `x))))).
   rewrite Heqc2. simpl. rewrite Heqc1. simpl.
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx'']. destruct x'' as [x''' Hx'''].
-  simpl in *. rewrite inv_inv. rewrite Zmod_small. omega. omega. auto. rewrite Zmod_small. omega. omega.
+  simpl in *. rewrite inv_inv. rewrite Zmod_small. lia. lia. auto. rewrite Zmod_small. lia. lia.
   remember (fun x => exist (fun k => ~ ``k < inverse p ``k) (c2 `x) (c_ex3 x)) as c3.
   assert (bijection c3).
   apply bijection_inversible.
@@ -546,12 +547,12 @@ Proof.
     proj1_sig (proj1_sig (c2 `x)) < inverse p (proj1_sig (proj1_sig (c2 `x)))).
   rewrite Heqc2. simpl. rewrite Heqc1. simpl.
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx'']. destruct x'' as [x''' Hx'''].
-  simpl in *. rewrite inv_inv. rewrite Zmod_small. omega. omega. auto. rewrite Zmod_small. omega. omega.
+  simpl in *. rewrite inv_inv. rewrite Zmod_small. lia. lia. auto. rewrite Zmod_small. lia. lia.
   remember (fun x => exist (fun k => ``k < inverse p ``k) (c2 `x) (c'_ex x)) as c'.
   assert (forall x, c2 (c2 x) = x). intro x.
   destruct x as [x' Hx']. destruct x' as [x'' Hx''].
   rewrite Heqc2. apply proj1_inj. simpl. rewrite Heqc1. apply proj1_inj. simpl.
-  rewrite inv_inv. apply Zmod_small. omega. auto. rewrite Zmod_small. omega. omega.
+  rewrite inv_inv. apply Zmod_small. lia. auto. rewrite Zmod_small. lia. lia.
   exists c'. split.
   intro x. rewrite Heqc3. rewrite Heqc'. apply proj1_inj. simpl. auto.
   intro y. rewrite Heqc3. rewrite Heqc'. apply proj1_inj. simpl. auto.
@@ -565,12 +566,12 @@ Proof.
   rewrite product_ext with (g := fun x => 1).
   unfold ZpZmult. rewrite Zmult_1_l. rewrite <- Zmult_1_r with (n := -1).
   rewrite <- Zmult_mod_idemp_l with (a := -1). f_equal.
-  f_equal. rewrite Zmod_small by omega. rewrite <- minus_mod. auto. omega.
+  f_equal. rewrite Zmod_small by lia. rewrite <- minus_mod. auto. lia.
   apply product_property_conservation. intros. rewrite H7. rewrite H8. apply one_idemp.
   auto. auto. auto.
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx'']. destruct x'' as [x''' Hx'''].
   simpl in *. unfold compose. rewrite Heqc3. simpl. rewrite Heqc2. simpl.
-  rewrite Heqc1. simpl. unfold ZpZmult. apply p_inverse. auto. rewrite Zmod_small. omega. omega.
+  rewrite Heqc1. simpl. unfold ZpZmult. apply p_inverse. auto. rewrite Zmod_small. lia. lia.
 Qed.
 End Wilson.
 
@@ -581,7 +582,7 @@ Definition legendre (p a : Z) :=
 Lemma pow_0_l :
   forall n : Z, 0 < n -> 0 ^ n = 0.
 Proof.
-  intros n H. rewrite (Zsucc_pred n). rewrite pow_succ_r. omega. omega.
+  intros n H. rewrite (Zsucc_pred n). rewrite pow_succ_r. lia. lia.
 Qed.
 
 Section Eulers_criterion.
@@ -592,32 +593,32 @@ Variable a : Z.
 Let p_not_2 :
   p <> 2.
 Proof.
-  intro. rewrite H in p_odd. rewrite Z_mod_same in p_odd. omega. omega.
+  intro. rewrite H in p_odd. rewrite Z_mod_same in p_odd. lia. lia.
 Qed.
 Let if_a_0 :
   a mod p = 0 -> 0 mod p = (a ^ ((p - 1) / 2)) mod p.
 Proof.
   intro H.
   rewrite Zpower_mod. rewrite H.
-  assert ((p - 1) / 2 >= 2 / 2). apply Z_div_ge. omega. destruct p_prime; omega.
-  rewrite Z_div_same in H0. assert (0 < (p - 1) / 2). omega. rewrite pow_0_l by auto.
-  auto. omega. destruct p_prime; omega.
+  assert ((p - 1) / 2 >= 2 / 2). apply Z_div_ge. lia. destruct p_prime; lia.
+  rewrite Z_div_same in H0. assert (0 < (p - 1) / 2). lia. rewrite pow_0_l by auto.
+  auto. lia. destruct p_prime; lia.
 Qed.
 Let if_a_square :
   a mod p <> 0 -> (exists y, (y ^ 2) mod p = a mod p) ->
     1 mod p = (a ^ ((p - 1) / 2)) mod p.
 Proof.
   intros H Hsq. destruct Hsq as [y Hsq].
-  assert (y mod p <> 0). intro Hc. rewrite Zpower_mod in Hsq by (destruct p_prime; omega).
+  assert (y mod p <> 0). intro Hc. rewrite Zpower_mod in Hsq by (destruct p_prime; lia).
   rewrite Hc in Hsq. rewrite pow_0_l in Hsq. rewrite Zmod_0_l in Hsq. congruence.
-  omega.
-  rewrite Zpower_mod by (destruct p_prime; omega). rewrite <- Hsq.
-  rewrite <- Zpower_mod by (destruct p_prime; omega).
+  lia.
+  rewrite Zpower_mod by (destruct p_prime; lia). rewrite <- Hsq.
+  rewrite <- Zpower_mod by (destruct p_prime; lia).
   rewrite power_power.
-  symmetry. rewrite Zmod_1_l by (destruct p_prime; omega).
-  assert (2 * ((p - 1) / 2) = p - 1). symmetry. apply Z_div_exact_2. omega.
+  symmetry. rewrite Zmod_1_l by (destruct p_prime; lia).
+  assert (2 * ((p - 1) / 2) = p - 1). symmetry. apply Z_div_exact_2. lia.
   rewrite <- Zminus_mod_idemp_l. rewrite p_odd. auto.
-  rewrite H1. apply FLT. auto. auto. omega. apply Z_div_pos. omega. destruct p_prime; omega.
+  rewrite H1. apply FLT. auto. auto. lia. apply Z_div_pos. lia. destruct p_prime; lia.
 Qed.
 Let if_a_not_square :
   a mod p <> 0 -> (forall y, (y * y) mod p <> a mod p) ->
@@ -627,43 +628,43 @@ Proof.
   remember (fun x : {x : Z | 1 <= x <= p - 1} => ((inverse p `x) * a) mod p) as f.
   assert (forall x : {x : Z | 1 <= x <= p - 1}, 1 <= f x <= p - 1).
   intro x. destruct x as [x' Hx']. rewrite Heqf. simpl.
-  assert (0 <= (inverse p x' * a) mod p < p). apply mod_pos_bound. destruct p_prime; omega.
+  assert (0 <= (inverse p x' * a) mod p < p). apply mod_pos_bound. destruct p_prime; lia.
   assert ((inverse p x' * a) mod p <> 0). intro H1.
   apply Zmod_divide in H1. apply prime_mult in H1. destruct H1.
   apply Zdivide_mod in H0. assert (inverse p x' mod p <> 0).
-  apply inv_not_0. auto. rewrite Zmod_small. omega. omega. contradiction.
-  apply Zdivide_mod in H0. contradiction. auto. destruct p_prime; omega.
-  omega.
+  apply inv_not_0. auto. rewrite Zmod_small. lia. lia. contradiction.
+  apply Zdivide_mod in H0. contradiction. auto. destruct p_prime; lia.
+  lia.
   remember (fun x => exist (fun k => 1 <= k <= p - 1) (f x) (H x)) as f'.
   assert (forall x, f' (f' x) = x). intro x. rewrite Heqf'. generalize H. rewrite Heqf.
   intro. apply proj1_inj. simpl. destruct Heqf.
   rewrite <- inv_mod. rewrite <- inv_prod. rewrite Zmult_mod_idemp_l.
   rewrite <- Zmult_assoc. rewrite Zmult_mod. rewrite inv_inv. rewrite Zmult_comm with (m := a).
   rewrite p_inverse. rewrite Zmult_1_r. repeat (rewrite Zmod_mod). destruct x. simpl. rewrite Zmod_small.
-  auto. omega. auto. auto. auto. destruct x. simpl. rewrite Zmod_small. omega. omega. auto. auto.
+  auto. lia. auto. auto. auto. destruct x. simpl. rewrite Zmod_small. lia. lia. auto. auto.
   assert (forall x, proj1_sig (f' x) <> `x).
   intro x. destruct x as [x' Hx']. rewrite Heqf'. simpl. rewrite Heqf. simpl. intro H1.
   assert ((x' * ((inverse p x' * a) mod p)) mod p = a mod p).
   rewrite Zmult_mod_idemp_r. rewrite Zmult_assoc. rewrite <- Zmult_mod_idemp_l.
-  rewrite p_inverse. f_equal. omega. auto. rewrite Zmod_small. omega. omega.
+  rewrite p_inverse. f_equal. lia. auto. rewrite Zmod_small. lia. lia.
   rewrite H1 in H2. apply (Hnotsq x'). auto.
   assert (finite {x : Z | 1 <= x <= p - 1}).
-  exists (Z.to_nat (p - 1 - 1 + 1)). apply card_interval. destruct p_prime; omega.
+  exists (Z.to_nat (p - 1 - 1 + 1)). apply card_interval. destruct p_prime; lia.
   assert (product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1 _ H2 (fun x => `x)
-    = -1 mod p). rewrite <- Wilson with (p_prime := p_prime).
+    = -1 mod p). rewrite <- Wilson with (p_prime := p_prime) (p_odd := p_odd).
   f_equal. apply proof_irrelevance. auto.
   rewrite product_split with (P := fun x => proj1_sig (f' x) < `x) in H3;
   [ | (apply one_idemp; auto) | (intros; symmetry; rewrite ZpZmult_comm with (x := 1); apply mod_1_mod) ].
   assert (forall x : {x : {x : Z | 1 <= x <= p - 1} | proj1_sig (f' x) < `x},
     ~ (proj1_sig (f' (f' `x)) < (proj1_sig (f' `x)))).
-  intro x. destruct x as [x' Hx']. rewrite H0. simpl. omega.
+  intro x. destruct x as [x' Hx']. rewrite H0. simpl. lia.
   remember (fun x => exist (fun k => ~ (proj1_sig (f' k) < `k)) (f' `x) (H4 x)) as b.
   assert (bijection b).
   apply bijection_inversible.
   assert (forall x : {x : {x : Z | 1 <= x <= p - 1} | ~ (proj1_sig (f' x) < `x)},
     proj1_sig (f' (f' `x)) < proj1_sig (f' `x)).
   intro x. destruct x as [x' Hx']. rewrite H0. simpl.
-  assert (proj1_sig (f' x') <> `x'). apply H1. omega.
+  assert (proj1_sig (f' x') <> `x'). apply H1. lia.
   exists (fun x => exist _ (f' `x) (H5 x)).
   split. intro x. apply proj1_inj. simpl. rewrite Heqb. simpl. apply H0.
   intro y. apply proj1_inj. simpl. rewrite Heqb. simpl. apply H0.
@@ -682,14 +683,14 @@ Proof.
   auto. auto. assert ((n + n = Z.to_nat (p - 1))%nat).
   apply cardinality_unique with (T := {x : Z | 1 <= x <= p - 1}).
   auto. assert (Z.to_nat (p - 1) = Z.to_nat (p - 1 - 1 + 1)).
-  f_equal. omega. rewrite H8. apply card_interval. destruct p_prime; omega.
+  f_equal. lia. rewrite H8. apply card_interval. destruct p_prime; lia.
   assert (n = Z.to_nat ((p - 1) / 2)).
   assert (p - 1 = (p - 1) / 2 + (p - 1) / 2).
   rewrite <- Zmult_1_r. rewrite Zmult_plus_distr_l. rewrite <- Zmult_plus_distr_r.
-  rewrite Zmult_comm. apply Z_div_exact_2. omega. rewrite <- Zminus_mod_idemp_l.
+  rewrite Zmult_comm. apply Z_div_exact_2. lia. rewrite <- Zminus_mod_idemp_l.
   rewrite p_odd. rewrite Zmod_0_l. auto.
-  rewrite H9 in H8. rewrite Z2Nat.inj_add in H8. omega.
-  apply Z_div_pos. omega. destruct p_prime; omega. apply Z_div_pos. omega. destruct p_prime; omega.
+  rewrite H9 in H8. rewrite Z2Nat.inj_add in H8. lia.
+  apply Z_div_pos. lia. destruct p_prime; lia. apply Z_div_pos. lia. destruct p_prime; lia.
   assert (product Z (ZpZmult p) (ZpZmult_comm p) (ZpZmult_assoc p) 1
        {x : {x : Z | 1 <= x <= p - 1} | proj1_sig (f' x) < `x}
        (ex_intro
@@ -702,10 +703,10 @@ Proof.
   apply inv_bijection in Hc. destruct Hc as [c Hc].
   rewrite product_bij with (b := c) (HJ := Fints_finite n) by auto. unfold compose.
   assert (Z.of_nat n = (p - 1) / 2). rewrite <- Z2Nat.id. f_equal. auto.
-  apply Z_div_pos. omega. destruct p_prime; omega.
+  apply Z_div_pos. lia. destruct p_prime; lia.
   rewrite <- H10.
   generalize n. simple induction n0.
-  rewrite empty_product. rewrite Zmod_1_l. auto. destruct p_prime; omega.
+  rewrite empty_product. rewrite Zmod_1_l. auto. destruct p_prime; lia.
   intros n1 Hr. rewrite product_n. rewrite Hr. rewrite Nat2Z.inj_succ.
   rewrite Zpower_succ_r. unfold ZpZmult. rewrite <- Zmult_mod. f_equal. apply Zmult_comm.
   apply Nat2Z.is_nonneg.
@@ -713,8 +714,8 @@ Proof.
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx''].
   unfold ZpZmult. simpl. rewrite Heqf'. simpl. rewrite Heqf. simpl.
   rewrite Zmult_mod_idemp_r. rewrite Zmult_assoc.
-  rewrite <- Zmult_mod_idemp_l. rewrite p_inverse. f_equal. omega. auto.
-  rewrite Zmod_small. omega. omega. apply one_idemp. auto. auto.
+  rewrite <- Zmult_mod_idemp_l. rewrite p_inverse. f_equal. lia. auto.
+  rewrite Zmod_small. lia. lia. apply one_idemp. auto. auto.
 Qed.
 Theorem Eulers_criterion :
   (legendre p a) mod p = a ^ ((p - 1) / 2) mod p.
@@ -739,17 +740,17 @@ Hypothesis p_odd : p mod 2 = 1.
 Let p_positive :
   0 < p.
 Proof.
-  destruct p_prime. omega.
+  destruct p_prime. lia.
 Qed.
 Let p_positive_rev :
   p > 0.
 Proof.
-  destruct p_prime. omega.
+  destruct p_prime. lia.
 Qed.
 Let p_not_0 :
   p <> 0.
 Proof.
-  assert (0 < p). apply p_positive. omega.
+  assert (0 < p). apply p_positive. lia.
 Qed.
 Let eq_mod_2 :
   forall x y : Z, (x + y) mod 2 = 0 -> x mod 2 = y mod 2.
@@ -759,7 +760,7 @@ Proof.
   rewrite H1 in H. rewrite H1. simpl in H. rewrite Zmod_mod in H. auto.
   assert (x mod 2 = 1). apply odd_mod. auto.
   rewrite H1 in H. rewrite H1. rewrite Zplus_mod_idemp_r in H.
-  assert (y = 1 + y - 1). omega. rewrite H2. rewrite Zminus_mod.
+  assert (y = 1 + y - 1). lia. rewrite H2. rewrite Zminus_mod.
   rewrite H. auto.
 Qed.
 Let div_mod_mod_2_even :
@@ -790,7 +791,7 @@ Let r_positive :
   forall (u : {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0}), 0 <= r u.
 Proof.
   intro u. assert (0 <= r u < p). unfold r.
-  apply mod_pos_bound with (b := p). apply p_positive. omega.
+  apply mod_pos_bound with (b := p). apply p_positive. lia.
 Qed.
 Let r' (u : {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0}) :=
     ((Zpower (-1) (r u)) * (r u)) mod p.
@@ -805,16 +806,16 @@ Proof with (exact p_not_0 || exact p_positive || auto).
   apply prime_mult in H2... destruct H2.
   apply prime_divide_pow in H1; [ | apply r_positive | auto].
   apply Zdivide_opp_r_rev with (b := 1) in H1.
-  apply Zdivide_1 in H1. destruct p_prime. omega.
+  apply Zdivide_1 in H1. destruct p_prime. lia.
   unfold r in H1. apply Zdivide_mod in H1.
   rewrite <- Zmod_div_mod in H1... 2 : reflexivity.
   apply Zmod_divide in H1... apply prime_mult in H1...
   destruct H1. apply Zdivide_mod in H1...
-  assert (0 < `u). destruct u. simpl. omega.
-  assert (0 <> `u). omega.
+  assert (0 < `u). destruct u. simpl. lia.
+  assert (0 <> `u). lia.
   apply Zdivide_bounds in H1... destruct u. simpl in *.
-  destruct p_prime. repeat (rewrite abs_eq in H1; [ | omega]).
-  omega. omega. omega.
+  destruct p_prime. repeat (rewrite abs_eq in H1; [ | lia]).
+  lia. lia. lia.
   unfold r'.
   destruct (even_or_odd (r u)).
   rewrite minus_one_pow_even; [ | apply r_positive | auto].
@@ -826,7 +827,7 @@ Proof with (exact p_not_0 || exact p_positive || auto).
   assert (0 <= r u < p). unfold r. apply mod_pos_bound. apply p_positive.
   assert (0 <> r u). intro H1. apply Zodd_equiv in H.
   rewrite <- H1 in H. contradiction.
-  omega. rewrite Zmod_small with (n := p) by auto. apply odd_mod in H.
+  lia. rewrite Zmod_small with (n := p) by auto. apply odd_mod in H.
   rewrite Zminus_mod. rewrite p_odd. rewrite H. auto.
   rewrite <- H0. f_equal. rewrite Zminus_mod. f_equal.
   unfold r. rewrite Zmod_mod. rewrite Z_mod_same; [ | apply p_positive_rev].
@@ -850,10 +851,10 @@ Proof.
   rewrite <- Zmult_assoc in Heq. rewrite <- opp_eq_mul_m1 in Heq.
   apply simpl_mod_p in Heq; [ | auto | auto].
   destruct u1 as [u1' Hu1']. destruct u2 as [u2' Hu2'].
-  assert (u1' mod p = u1'). apply Zmod_small. omega.
-  assert (u2' mod p = u2'). apply Zmod_small. omega.
+  assert (u1' mod p = u1'). apply Zmod_small. lia.
+  assert (u2' mod p = u2'). apply Zmod_small. lia.
   simpl in Heq.
-  rewrite Z_mod_nz_opp_full in Heq by omega.
+  rewrite Z_mod_nz_opp_full in Heq by lia.
   rewrite H in Heq. rewrite H0 in Heq.
   assert (u1' mod 2 = ((p mod 2) - (u2' mod 2)) mod 2).
   rewrite <- Zminus_mod. f_equal. auto.
@@ -894,8 +895,8 @@ Proof.
   unfold r in H1.
   apply simpl_mod_p in H1; [ | auto | auto].
   destruct u1 as [u1' Hu1']. destruct u2 as [u2' Hu2'].
-  assert (u1' mod p = u1'). apply Zmod_small. omega.
-  assert (u2' mod p = u2'). apply Zmod_small. omega.
+  assert (u1' mod p = u1'). apply Zmod_small. lia.
+  assert (u2' mod p = u2'). apply Zmod_small. lia.
   apply proj1_inj. simpl in *. congruence.
 Qed.
 Let r''_surjective :
@@ -909,24 +910,24 @@ Proof with (exact p_not_0 || exact p_positive ||
   destruct (not_0_inversible_mod_p q p p_prime q_not_0) as [b Hb].
   exists (y' * b). rewrite Zmult_comm. rewrite <- Zmult_assoc.
   rewrite <- Zmult_mod_idemp_r. rewrite Hb. rewrite Zmult_1_r.
-  apply Zmod_small. omega.
+  apply Zmod_small. lia.
   destruct H as [a Ha].
   destruct (even_or_odd (a mod p)).
     assert (1 <= a mod p <= p - 1 /\ (a mod p) mod 2 = 0).
     split. assert (0 <= a mod p < p). apply mod_pos_bound...
     assert (a mod p <> 0). intro H1. rewrite <- Zmult_mod_idemp_r in Ha.
     rewrite H1 in Ha. rewrite mul_0_r in Ha. rewrite Zmod_0_l in Ha.
-    omega. omega. apply even_mod. auto.
+    lia. lia. apply even_mod. auto.
     exists (exist _ (a mod p) H0).
     unfold r'. unfold r. simpl.
     repeat (rewrite Zmult_mod_idemp_r). rewrite Ha.
-    rewrite minus_one_pow_even; [ | omega | auto]. rewrite mul_1_l.
+    rewrite minus_one_pow_even; [ | lia | auto]. rewrite mul_1_l.
     rewrite Zmult_mod_idemp_r. auto. apply even_mod. auto.
   (* Odd (a mod p) *)
     assert (1 <= p - a mod p <= p - 1 /\ (p - a mod p) mod 2 = 0).
     split. assert (0 <= a mod p < p). apply mod_pos_bound...
     assert (a mod p <> 0). intro H1. rewrite H1 in H. rewrite odd_mod in H.
-    discriminate. omega. rewrite odd_mod in H.
+    discriminate. lia. rewrite odd_mod in H.
     rewrite Zminus_mod. rewrite H. rewrite p_odd. auto.
     exists (exist _ (p - a mod p) H0).
     unfold r'. unfold r. simpl.
@@ -936,11 +937,11 @@ Proof with (exact p_not_0 || exact p_positive ||
     rewrite Zminus_mod. rewrite Zmult_mod. rewrite Z_mod_same...
     rewrite mul_0_r. rewrite Zmod_0_l. rewrite Zmult_mod_idemp_r.
     rewrite Ha. rewrite <- Z_mod_same with (a := p)... rewrite Zminus_mod_idemp_l.
-    apply Zmod_small. omega. rewrite <- Zmult_mod_idemp_r. repeat (rewrite H1).
+    apply Zmod_small. lia. rewrite <- Zmult_mod_idemp_r. repeat (rewrite H1).
     assert (Odd (p - y')).
     apply odd_mod. rewrite Zminus_mod. rewrite p_odd. rewrite Hy'2. auto.
-    rewrite minus_one_pow_odd. assert (-1 * (p - y') = y' + -1 * p). omega.
-    rewrite H3. rewrite Z_mod_plus_full. apply Zmod_small. omega. omega. auto.
+    rewrite minus_one_pow_odd. assert (-1 * (p - y') = y' + -1 * p). lia.
+    rewrite H3. rewrite Z_mod_plus_full. apply Zmod_small. lia. lia. auto.
 Qed.
 
 Let card_R :
@@ -949,9 +950,9 @@ Proof.
   assert (forall u : {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0}, (Z.to_nat ((`u - 1) / 2) < Z.to_nat ((p - 1) / 2))%nat).
   intro u. destruct u as [u' Hu']. destruct Hu' as [Hu'1 Hu'2]. simpl.
   apply Nat2Z.inj_lt.
-  repeat (rewrite Z2Nat.id by (apply Z_div_pos; destruct p_prime; omega)).
-  apply Zdiv_lt_upper_bound. omega. rewrite Zmult_comm.
-  rewrite <- Z_div_exact_full_2. omega. omega. rewrite Zminus_mod.
+  repeat (rewrite Z2Nat.id by (apply Z_div_pos; destruct p_prime; lia)).
+  apply Zdiv_lt_upper_bound. lia. rewrite Zmult_comm.
+  rewrite <- Z_div_exact_full_2. lia. lia. rewrite Zminus_mod.
   rewrite p_odd. auto.
   exists (fun u : {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0} =>
       (exist _ (Z.to_nat ((`u - 1) / 2)) (H u))).
@@ -963,8 +964,8 @@ Proof.
   assert (Z.of_nat (S n') <= Z.of_nat (Z.to_nat ((p - 1) / 2))). apply Nat2Z.inj_le. auto.
   rewrite Z2Nat.id in H1. apply Zmult_le_compat_l with (p := 2) in H1.
   rewrite <- Z_div_exact_full_2 in H1. rewrite Nat2Z.inj_succ in H1.
-  omega. omega. rewrite Zminus_mod. rewrite p_odd. auto. omega.
-  apply Z_div_pos. omega. destruct p_prime; omega.
+  lia. lia. rewrite Zminus_mod. rewrite p_odd. auto. lia.
+  apply Z_div_pos. lia. destruct p_prime; lia.
   rewrite Zmult_comm. rewrite Z_mod_plus_full. auto.
   exists (fun n : {k : nat | (k < Z.to_nat ((p - 1) / 2))%nat} =>
            exist _ (2 + 2 * (Z.of_nat `n)) (H0 n)).
@@ -972,13 +973,13 @@ Proof.
   intro u. destruct u as [u' Hu']. destruct Hu' as [Hu' Hu''].
   apply proj1_inj. unfold proj1_sig.
   rewrite Z2Nat.id. assert (u' - 1 = 2 * ((u' - 1) / 2) + ((u' - 1) mod 2)).
-  apply Z_div_mod_eq. omega. assert ((u' - 1) mod 2 = 1).
-  rewrite Zminus_mod. rewrite Hu''. auto. omega. apply Z_div_pos. omega.
-  omega.
+  apply Z_div_mod_eq. lia. assert ((u' - 1) mod 2 = 1).
+  rewrite Zminus_mod. rewrite Hu''. auto. lia. apply Z_div_pos. lia.
+  lia.
   intro y. destruct y as [y' Hy'].
   apply proj1_inj. unfold proj1_sig.
-  assert (2 + 2 * Z.of_nat y' - 1 = 1 + of_nat y' * 2). omega.
-  rewrite H1. rewrite Z_div_plus_full. simpl. apply Nat2Z.id. omega.
+  assert (2 + 2 * Z.of_nat y' - 1 = 1 + of_nat y' * 2). lia.
+  rewrite H1. rewrite Z_div_plus_full. simpl. apply Nat2Z.id. lia.
 Qed.
 
 Let R_finite :
@@ -1000,8 +1001,8 @@ Proof.
   intros x y Hxnz Hynz. unfold mlt. unfold ZpZmult. rewrite Zmod_mod.
   intro H. apply Zmod_divide in H. apply prime_mult in H.
   destruct H. apply Zdivide_mod in H. contradiction. apply Zdivide_mod in H. contradiction.
-  auto. apply p_not_0. rewrite Zmod_1_l. omega. destruct p_prime. omega.
-  intro x. destruct x. simpl.  rewrite Zmod_small. omega. omega.
+  auto. apply p_not_0. rewrite Zmod_1_l. lia. destruct p_prime. lia.
+  intro x. destruct x. simpl.  rewrite Zmod_small. lia. lia.
 Qed.
 Let P1 :
   product Z mlt mlt_comm mlt_assoc 1 _ R_finite r =
@@ -1040,7 +1041,7 @@ Proof.
   rewrite <- product_mul. apply product_property_conservation.
   intros. rewrite H. rewrite H0. apply one_id. auto.
   unfold mlt. unfold ZpZmult. intro x. rewrite <- Zmult_power. simpl.
-  rewrite one_pow. rewrite Zmod_1_l. auto. destruct p_prime; omega.
+  rewrite one_pow. rewrite Zmod_1_l. auto. destruct p_prime; lia.
   apply r_positive. apply r_positive. apply one_id.
 Qed.
 Let P5 :
@@ -1083,19 +1084,19 @@ Proof.
   apply product_ext. intro i. apply minus_one_pow_mod_2.
   apply r_positive. apply Z_div_pos. apply p_positive_rev.
   destruct i as [i' Hi']. simpl. rewrite <- Zmult_0_l with (n := i').
-  apply Zmult_le_compat_r. omega. omega.
+  apply Zmult_le_compat_r. lia. lia.
   unfold r.
   destruct i as [i' Hi']. destruct Hi' as [Hi' Hi'']. simpl.
   assert (q * i' = p * (q * i' / p) + (q * i') mod p).
   apply Z_div_mod_eq. apply p_positive_rev.
   assert ((q * i' + (q * i') mod p) mod 2 = (p * (q * i' / p) + 2 * ((q * i') mod p)) mod 2).
-  f_equal. omega.
+  f_equal. lia.
   rewrite Zplus_mod in H0. rewrite Zmult_mod in H0.
   rewrite Hi'' in H0. rewrite Zmult_0_r in H0. rewrite Zmod_0_l in H0.
   rewrite Zplus_0_l in H0. rewrite Zmod_mod in H0.
   rewrite Zplus_mod in H0. rewrite Zmult_mod with (n := 2) in H0.
   rewrite p_odd in H0. rewrite Zmult_1_l in H0. rewrite Zmod_mod in H0.
-  rewrite Zmult_mod with (n := 2) in H0. rewrite Z_mod_same in H0 by omega.
+  rewrite Zmult_mod with (n := 2) in H0. rewrite Z_mod_same in H0 by lia.
   rewrite Zmult_0_l in H0. rewrite Zmod_0_l in H0. rewrite Zplus_0_r in H0.
   rewrite Zmod_mod in H0. auto.
 Qed.
@@ -1110,7 +1111,7 @@ Proof.
   apply product_ext. intro i. apply m1_pow_compatible.
   apply Zge_iff_le. apply Z_div_pos. apply p_positive_rev.
   destruct i as [i' Hi']. simpl. rewrite <- Zmult_0_l with (n := i').
-  apply Zmult_le_compat_r. omega. omega.
+  apply Zmult_le_compat_r. lia. lia.
   rewrite product_morph with (morph := fun x => (m1_pow x) mod p)
                              (multS := mlt) (multS_com := mlt_comm)
                              (multS_assoc := mlt_assoc) (eS := 1).
@@ -1119,9 +1120,9 @@ Proof.
                            (multS := mlt) (multS_com := mlt_comm)
                            (multS_assoc := mlt_assoc) (eS := 1).
   intros. unfold mlt. unfold ZpZmult. rewrite Zmod_mod. rewrite <- Zmult_mod. auto.
-  apply Zmod_1_l. destruct p_prime; omega.
+  apply Zmod_1_l. destruct p_prime; lia.
   intros. unfold mlt. unfold ZpZmult. rewrite <- Zmult_mod. f_equal. apply m1_pow_morphism.
-  unfold m1_pow. simpl. apply Zmod_1_l. destruct p_prime; omega.
+  unfold m1_pow. simpl. apply Zmod_1_l. destruct p_prime; lia.
 Qed.
 Let P10 :
   (product Z mlt mlt_comm mlt_assoc 1 _ R_finite (fun u => q)) mod p =
@@ -1140,7 +1141,7 @@ Proof.
   rewrite Zmod_mod. fold (ZpZmult p). rewrite <- Zmult_mod_idemp_l. fold mlt. rewrite H.
   rewrite Zmult_mod_idemp_l. f_equal. rewrite pow_succ_r. rewrite Zmult_comm.
   auto. apply Nat2Z.is_nonneg.
-  rewrite Z2Nat.id. auto. apply Z_div_pos. omega. destruct p_prime; omega.
+  rewrite Z2Nat.id. auto. apply Z_div_pos. lia. destruct p_prime; lia.
 Qed.
 Let Eisensteins_lemma_mod_p :
   (legendre p q) mod p = (m1_pow (product Z Zplus Zplus_comm Zplus_assoc 0 _ R_finite (fun u => (q * `u) / p))) mod p.
@@ -1150,27 +1151,27 @@ Qed.
 Let p_not_2 :
   p <> 2.
 Proof.
- intro H. rewrite H in p_odd. rewrite Z_mod_same in p_odd by omega. discriminate.
+ intro H. rewrite H in p_odd. rewrite Z_mod_same in p_odd by lia. discriminate.
 Qed.
 Lemma Eisensteins_lemma1 :
   legendre p q = m1_pow (product Z Zplus Zplus_comm Zplus_assoc 0 _ R_finite (fun u => (q * `u) / p)).
 Proof.
   assert ((legendre p q + 1) mod p = (m1_pow (product Z Zplus Zplus_comm Zplus_assoc 0 _ R_finite (fun u => (q * `u) / p)) + 1) mod p).
   rewrite Zplus_mod. rewrite Eisensteins_lemma_mod_p. rewrite <- Zplus_mod. auto.
-  rewrite Zmod_small in H; [ | (destruct p_prime; unfold legendre; case_if; case_if; omega; omega)].
+  rewrite Zmod_small in H; [ | (destruct p_prime; unfold legendre; case_if; case_if; lia; lia)].
   rewrite Zmod_small in H; [ | (destruct p_prime;
     destruct (m1_pow_1_or_m1 (product Z add add_comm add_assoc 0
      {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0} R_finite
-     (fun u : {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0} => q * `u / p))); omega; omega)].
-  omega.
+     (fun u : {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0} => q * `u / p))); lia; lia)].
+  lia.
 Qed.
 Let U_finite :
   finite {u : Z | 1 <= u <= (p - 1) / 2}.
 Proof.
   exists (Z.to_nat ((p - 1) / 2 - 1 + 1)). apply card_interval.
-  apply Zmult_le_reg_r with (p := 2). omega.
+  apply Zmult_le_reg_r with (p := 2). lia.
   rewrite Zmult_comm with (n := (p - 1) / 2). rewrite <- Z_div_exact_full_2.
-  destruct p_prime; omega. omega. rewrite <- Zminus_mod_idemp_l. rewrite p_odd. auto.
+  destruct p_prime; lia. lia. rewrite <- Zminus_mod_idemp_l. rewrite p_odd. auto.
 Qed.
 Hypothesis q_odd : q mod 2 = 1.
 Hypothesis q_prime : prime q.
@@ -1178,14 +1179,14 @@ Let E1 :
   (product Z Zplus Zplus_comm Zplus_assoc 0 _ R_finite (fun u => (q * `u) / p)) mod 2 =
   (product Z Zplus Zplus_comm Zplus_assoc 0 _ U_finite (fun u => (q * `u) / p)) mod 2.
 Proof.
-  rewrite product_split with (P := fun u : {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0} => `u <= (p - 1) / 2) by (intros; omega).
-  rewrite product_split with (P := fun u : {u : Z | 1 <= u <= (p - 1) / 2} => `u mod 2 = 0) by (intros; omega).
+  rewrite product_split with (P := fun u : {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0} => `u <= (p - 1) / 2) by (intros; lia).
+  rewrite product_split with (P := fun u : {u : Z | 1 <= u <= (p - 1) / 2} => `u mod 2 = 0) by (intros; lia).
   rewrite Zplus_mod.
   rewrite Zplus_mod with (a := product _ _ _ _ _ {x : {u : Z | 1 <= u <= (p - 1) / 2} | `x mod 2 = 0} _ _).
   f_equal. f_equal. f_equal.
   assert (b_ex1 : forall x : {x : {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0} | `x <= (p - 1) / 2},
     1 <= ``x <= (p - 1) / 2). intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx''].
-  simpl in *. omega.
+  simpl in *. lia.
   remember (fun x => exist (fun k => 1 <= k <= (p - 1) / 2) ``x (b_ex1 x)) as b1.
   assert (b_ex2 : forall x, (proj1_sig (b1 x)) mod 2 = 0).
   intro x. rewrite Heqb1. simpl. destruct x as [x' Hx']. destruct x' as [x'' Hx'']. simpl in *. destruct Hx''. auto.
@@ -1194,11 +1195,11 @@ Proof.
   apply bijection_inversible.
   assert (b'_ex1 : forall x : {x : {x : Z | 1 <= x <= (p - 1) / 2} | `x mod 2 = 0},
     1 <= ``x <= p - 1 /\ ``x mod 2 = 0). intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx''].
-  simpl in *. split. assert ((p - 1) / 2 < p - 1). apply Z_div_lt. omega. destruct p_prime; omega.
-  omega. auto.
+  simpl in *. split. assert ((p - 1) / 2 < p - 1). apply Z_div_lt. lia. destruct p_prime; lia.
+  lia. auto.
   remember (fun x => exist (fun k => 1 <= k <= p - 1 /\ k mod 2 = 0) ``x (b'_ex1 x)) as b'1.
   assert (b'_ex2 : forall x, proj1_sig (b'1 x) <= (p - 1) / 2). intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx''].
-  simpl in *. rewrite Heqb'1. simpl. omega.
+  simpl in *. rewrite Heqb'1. simpl. lia.
   remember (fun x => exist (fun k => `k <= (p - 1) / 2) (b'1 x) (b'_ex2 x)) as b'2.
   exists b'2. split.
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx''].
@@ -1213,12 +1214,12 @@ Proof.
   apply eq_mod_2.
   assert (p - 1 = (p - 1) / 2 + (p - 1) / 2).
   rewrite <- Zmult_1_r. rewrite Zmult_plus_distr_l. rewrite <- Zmult_plus_distr_r.
-  rewrite Zmult_comm. apply Z_div_exact_2. omega. rewrite <- Zminus_mod_idemp_l.
+  rewrite Zmult_comm. apply Z_div_exact_2. lia. rewrite <- Zminus_mod_idemp_l.
   rewrite p_odd. rewrite Zmod_0_l. auto.
   assert (c_ex1 : forall x : {x : {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0} | ~ `x <= (p - 1) / 2},
     1 <= (p - ``x) <= (p - 1) / 2).
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx''].
-  simpl in *. omega.
+  simpl in *. lia.
   remember (fun x => exist (fun k => 1 <= k <= (p - 1) / 2) (p - ``x) (c_ex1 x)) as c1.
   assert (c_ex2 : forall x, ~ (proj1_sig (c1 x) mod 2 = 0)).
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx'']. simpl in *.
@@ -1229,21 +1230,21 @@ Proof.
   assert (c'_ex1 : forall x : {x : {x : Z | 1 <= x <= (p - 1) / 2} | `x mod 2 <> 0},
     1 <= p - ``x <= p - 1 /\ (p - ``x) mod 2 = 0).
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx'']. simpl in *.
-  split. omega. rewrite Zminus_mod. rewrite p_odd.
-  assert (x'' mod 2 = 1). assert (0 <= x'' mod 2 < 2). apply mod_pos_bound. omega. omega.
+  split. lia. rewrite Zminus_mod. rewrite p_odd.
+  assert (x'' mod 2 = 1). assert (0 <= x'' mod 2 < 2). apply mod_pos_bound. lia. lia.
   rewrite H0. auto.
   remember (fun x => exist (fun k => 1 <= k <= p - 1 /\ k mod 2 = 0) (p - ``x) (c'_ex1 x)) as c'1.
   assert (c'_ex2 : forall x, ~ proj1_sig (c'1 x) <= (p - 1) / 2).
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx'']. simpl in *.
-  rewrite Heqc'1. simpl. omega.
+  rewrite Heqc'1. simpl. lia.
   remember (fun x => exist (fun k => ~ `k <= (p - 1) / 2) (c'1 x) (c'_ex2 x)) as c'2.
   exists c'2. split.
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx''].
   rewrite Heqc'2. apply proj1_inj. simpl. rewrite Heqc'1. apply proj1_inj. simpl.
-  rewrite Heqc2. simpl. rewrite Heqc1. simpl. omega.
+  rewrite Heqc2. simpl. rewrite Heqc1. simpl. lia.
   intro x. destruct x as [x' Hx']. destruct x' as [x'' Hx''].
   rewrite Heqc2. apply proj1_inj. simpl. rewrite Heqc1. apply proj1_inj. simpl.
-  rewrite Heqc'2. simpl. rewrite Heqc'1. simpl. omega.
+  rewrite Heqc'2. simpl. rewrite Heqc'1. simpl. lia.
   rewrite product_bij with (b := c2) (HJ := (subtype_finite R_finite
       (fun x : {u : Z | 1 <= u <= p - 1 /\ u mod 2 = 0} =>
        ~ `x <= (p - 1) / 2))) by auto.
@@ -1257,16 +1258,16 @@ Proof.
   rewrite <- Zplus_mod. rewrite Zmult_minus_distr_l.
   rewrite Zminus_mod. rewrite Zmult_mod with (b := p).
   rewrite Z_mod_same. rewrite Zmult_0_r. rewrite Zmod_0_l.
-  assert ((0 - (q * x'') mod p) = -((q * x'') mod p)). omega. rewrite H0.
+  assert ((0 - (q * x'') mod p) = -((q * x'') mod p)). lia. rewrite H0.
   rewrite minus_mod.
-  assert ((q * x'') mod p + (p - (q * x'') mod p + 1) = p + 1). omega. rewrite H1.
+  assert ((q * x'') mod p + (p - (q * x'') mod p + 1) = p + 1). lia. rewrite H1.
   rewrite <- Zplus_mod_idemp_l. rewrite p_odd. auto.
   assert (0 <= (q * x'') mod p < p). apply mod_pos_bound. auto.
   assert ((q * x'') mod p <> 0). intro H2.
   apply Zmod_divide in H2. apply prime_mult in H2. destruct H2.
   apply Zdivide_mod in H2. contradiction.
-  apply Zdivide_mod in H2. rewrite Zmod_small in H2. omega. omega. auto. auto.
-  omega. auto. rewrite Zmult_mod.
+  apply Zdivide_mod in H2. rewrite Zmod_small in H2. lia. lia. auto. auto.
+  lia. auto. rewrite Zmult_mod.
   rewrite q_odd. rewrite Zminus_mod. rewrite p_odd.
   destruct Hx'' as [Hx''1 Hx''2]. rewrite Hx''2. auto.
   rewrite Zmult_mod. destruct Hx'' as [Hx''1 Hx''2]. rewrite Hx''2. rewrite Zmult_0_r. auto.
@@ -1275,10 +1276,10 @@ Definition EL := (product Z Zplus Zplus_comm Zplus_assoc 0 _ U_finite (fun u => 
 Lemma EL1 :
   0 <= EL.
 Proof.
-  unfold EL. apply product_property_conservation. intros. omega. omega.
+  unfold EL. apply product_property_conservation. intros. lia. lia.
   intro x. destruct x as [x' Hx']. simpl.
-  apply Z_div_pos. omega. rewrite <- Zmult_0_l with (n := x').
-  apply Zmult_le_compat_r. omega. omega.
+  apply Z_div_pos. lia. rewrite <- Zmult_0_l with (n := x').
+  apply Zmult_le_compat_r. lia. lia.
 Qed.
 Lemma EL2 :
   legendre p q = m1_pow EL.
@@ -1301,8 +1302,8 @@ Proof.
   transitivity (product Z add add_comm add_assoc 0 {u : Z | 1 <= u <= (p - 1) / 2} U_finite
     (fun u : {u : Z | 1 <= u <= (p - 1) / 2} => Z.of_nat (Z.to_nat (q * `u / p)))).
   apply product_ext. intro i. rewrite Z2Nat.id. auto. destruct i as [i' Hi'].
-  simpl. apply Z_div_pos. omega. rewrite <- Zmult_0_r with (n := q).
-  apply Zmult_le_compat_l. omega. destruct q_prime; omega.
+  simpl. apply Z_div_pos. lia. rewrite <- Zmult_0_r with (n := q).
+  apply Zmult_le_compat_l. lia. destruct q_prime; lia.
   symmetry. apply product_morph. intros x y. apply Nat2Z.inj_add. auto.
   rewrite H.
   assert (f_ex : forall s : {s : Z * Z |
@@ -1322,7 +1323,7 @@ Proof.
   intro s. destruct s as [s' Hs']. destruct s' as [s'' Hs'']. simpl in *.
   apply proj1_inj in Hs'. simpl in Hs'. rewrite Hs' in Hs''.
   destruct Hs'' as [Hs''1 Hs''2]. destruct Hs''2 as [Hs''2 Hs''3].
-  split. omega. apply Zdiv_le_lower_bound. auto. rewrite Zmult_comm. auto.
+  split. lia. apply Zdiv_le_lower_bound. auto. rewrite Zmult_comm. auto.
   remember (fun s => exist (fun k => 1 <= k <= (q * k' / p)) (snd ``s) (b_ex s)) as b.
   assert (Hb : bijection b).
   apply bijection_inversible.
@@ -1330,20 +1331,20 @@ Proof.
     (1 <= fst (k', `x) <= (p - 1) / 2 /\ (1 <= snd (k', `x) <= (q - 1) / 2
                                       /\ p * snd (k', `x) <= q * fst (k', `x)))).
   intro x. simpl. destruct x as [x' Hx']. simpl.
-  split. omega. split. split. omega.
-  rewrite over_2 by auto. transitivity (q * k' / p). omega.
+  split. lia. split. split. lia.
+  rewrite over_2 by auto. transitivity (q * k' / p). lia.
   transitivity (q * ((p - 1) / 2) / p).
-  apply Z_div_le. auto. apply Zmult_le_compat_l. omega. omega.
-  rewrite over_2 by auto. apply Zdiv_le_lower_bound. omega.
+  apply Z_div_le. auto. apply Zmult_le_compat_l. lia. lia.
+  rewrite over_2 by auto. apply Zdiv_le_lower_bound. lia.
   transitivity ((q * (p / 2) * 2) / p).
   rewrite Zmult_comm. rewrite Zmult_comm with (m := 2).
   apply Zdiv_mult_le. rewrite <- Zmult_0_r with (n := q).
-  apply Zmult_le_compat_l. apply Z_div_pos. omega. omega. omega. omega. omega.
-  transitivity (q * p / p). apply Z_div_le. omega. rewrite <- Zmult_assoc.
-  apply Zmult_le_compat_l. rewrite Zmult_comm. apply Z_mult_div_ge. omega. omega.
-  rewrite Z_div_mult. omega. omega.
-  transitivity (p * ((q * k') / p)). apply Zmult_le_compat_l. omega. omega.
-  apply Z_mult_div_ge. omega.
+  apply Zmult_le_compat_l. apply Z_div_pos. lia. lia. lia. lia. lia.
+  transitivity (q * p / p). apply Z_div_le. lia. rewrite <- Zmult_assoc.
+  apply Zmult_le_compat_l. rewrite Zmult_comm. apply Z_mult_div_ge. lia. lia.
+  rewrite Z_div_mult. lia. lia.
+  transitivity (p * ((q * k') / p)). apply Zmult_le_compat_l. lia. lia.
+  apply Z_mult_div_ge. lia.
   remember (fun x => exist (fun s =>
     1 <= fst s <= (p - 1) / 2 /\ 1 <= snd s <= (q - 1) / 2 /\ p * snd s <= q * fst s
   ) (k', `x) (b'_ex1 x)) as b'1.
@@ -1360,11 +1361,11 @@ Proof.
   intro y. destruct y as [y' Hy']. rewrite Heqb. apply proj1_inj. simpl.
   rewrite Heqb'1. simpl. auto.
   apply card_bijection with (b := b). auto.
-  assert (Z.to_nat (q * k' / p) = Z.to_nat (q * k' / p - 1 + 1)). f_equal. omega.
+  assert (Z.to_nat (q * k' / p) = Z.to_nat (q * k' / p - 1 + 1)). f_equal. lia.
   rewrite H0. apply card_interval_full.
-  assert (0 <= q * k' / p). apply Z_div_pos. omega.
+  assert (0 <= q * k' / p). apply Z_div_pos. lia.
   rewrite <- Zmult_0_l with (n := k'). apply Zmult_le_compat_r.
-  omega. omega. omega.
+  lia. lia. lia.
 Qed.
 
 End Eisensteins_lemma.
@@ -1380,12 +1381,12 @@ Hypothesis p_not_q : p <> q.
 Let p_ge_1 :
   p > 1.
 Proof.
-  destruct p_prime; omega.
+  destruct p_prime; lia.
 Qed.
 Let q_ge_1 :
   q > 1.
 Proof.
-  destruct q_prime; omega.
+  destruct q_prime; lia.
 Qed.
 Let p_not_2 :
   p <> 2.
@@ -1400,24 +1401,24 @@ Qed.
 Let p2_pos :
   (p - 1) / 2 > 0.
 Proof.
-  assert (1 <= (p - 1) / 2). apply Zdiv_le_lower_bound. omega. omega. omega.
+  assert (1 <= (p - 1) / 2). apply Zdiv_le_lower_bound. lia. lia. lia.
 Qed.
 Let q2_pos :
   (q - 1) / 2 > 0.
 Proof.
-  assert (1 <= (q - 1) / 2). apply Zdiv_le_lower_bound. omega. omega. omega.
+  assert (1 <= (q - 1) / 2). apply Zdiv_le_lower_bound. lia. lia. lia.
 Qed.
 Let p_mod_q_not_0 :
   p mod q <> 0.
 Proof.
   intro H. apply Zmod_divide in H. contradict p_not_q. symmetry. apply prime_div_prime.
-  auto. auto. auto. omega.
+  auto. auto. auto. lia.
 Qed.
 Let q_mod_p_not_0 :
   q mod p <> 0.
 Proof.
   intro H. apply Zmod_divide in H. contradict p_not_q. apply prime_div_prime.
-  auto. auto. auto. omega.
+  auto. auto. auto. lia.
 Qed.
 Let a := EL p p_prime p_odd q.
 Let b := EL q q_prime q_odd p.
@@ -1431,7 +1432,7 @@ Proof.
     1 <= fst s <= (p - 1) / 2 /\ 1 <= snd s <= (q - 1) / 2 /\ p * snd s <= q * fst s).
   intro x. tauto.
   unfold a.
-  apply EL3. omega. auto. auto.
+  apply EL3. lia. auto. auto.
 Qed.
 Let QR2 :
   cardinality {s : {s : Z * Z | 1 <= fst s <= (p - 1) / 2 /\ 1 <= snd s <= (q - 1) / 2} |
@@ -1441,15 +1442,15 @@ Proof.
   assert (forall s : {s : Z * Z | 1 <= fst s <= (p - 1) / 2 /\ 1 <= snd s <= (q - 1) / 2},
     ~ p * snd `s <= q * fst `s <-> q * fst `s <= p * snd `s).
   intro s. split.
-  intro H. omega.
+  intro H. lia.
   intro H.
   assert (q * fst `s <> p * snd `s). intro H0.
   assert (p | q * fst `s). exists (snd `s). rewrite Zmult_comm with (m := p). auto.
   apply prime_mult in H1. destruct H1. apply Zdivide_mod in H1.
   apply q_mod_p_not_0 in H1. auto. apply Zdivide_mod in H1. rewrite Zmod_small in H1.
   destruct s as [s' Hs']. simpl in H1.
-  omega. destruct s as [s' Hs']. simpl. destruct Hs' as [Hs'1 Hs'2].
-  assert ((p - 1) / 2 < p - 1). apply Z_div_lt. omega. omega. omega. auto. omega.
+  lia. destruct s as [s' Hs']. simpl. destruct Hs' as [Hs'1 Hs'2].
+  assert ((p - 1) / 2 < p - 1). apply Z_div_lt. lia. lia. lia. auto. lia.
   apply card_subtype with (Q := fun s => q * fst `s <= p * snd `s).
   auto.
   apply card_and with (Q := fun s => q * fst s <= p * snd s).
@@ -1478,7 +1479,7 @@ Proof.
   apply card_subtype with (Q := fun s =>
     1 <= fst s <= (q - 1) / 2 /\ 1 <= snd s <= (p - 1) / 2 /\ q * snd s <= p * fst s).
   tauto.
-  unfold b. apply EL3. omega. auto. auto.
+  unfold b. apply EL3. lia. auto. auto.
 Qed.
 Let QR3 :
   cardinality {s : Z * Z | 1 <= fst s <= (p - 1) / 2 /\ 1 <= snd s <= (q - 1) / 2}
@@ -1495,14 +1496,14 @@ Proof.
     1 <= fst `s + ((p - 1) / 2) * (snd `s - 1) <= ((p - 1) / 2) * ((q - 1) / 2)).
   intro s. destruct s as [s' Hs']. destruct Hs' as [Hs'1 Hs'2].
   simpl. split.
-  transitivity (fst s' + ((p - 1) / 2) * (1 - 1)). omega.
-  apply Zplus_le_compat_l. apply Zmult_le_compat_l. omega.
-  apply Z_div_pos. omega. omega.
+  transitivity (fst s' + ((p - 1) / 2) * (1 - 1)). lia.
+  apply Zplus_le_compat_l. apply Zmult_le_compat_l. lia.
+  apply Z_div_pos. lia. lia.
   transitivity (fst s' + (p - 1) / 2 * ((q - 1) / 2 - 1)).
-  apply Zplus_le_compat_l. apply Zmult_le_compat_l. omega.
-  apply Z_div_pos. omega. omega.
+  apply Zplus_le_compat_l. apply Zmult_le_compat_l. lia.
+  apply Z_div_pos. lia. lia.
   transitivity ((p - 1) / 2 + (p - 1) / 2 * ((q - 1) / 2 - 1)).
-  omega. rewrite Zmult_minus_distr_l. omega.
+  lia. rewrite Zmult_minus_distr_l. lia.
   apply card_bijection with (b := fun s =>
     exist (fun x => 1 <= x <= ((p - 1) / 2) * ((q - 1) / 2))
           (fst `s + ((p - 1) / 2) * (snd `s - 1)) (H s)).
@@ -1513,32 +1514,32 @@ Proof.
     1 <= snd ((`x - 1) mod ((p - 1) / 2) + 1, (`x - 1) / ((p - 1) / 2) + 1) <= (q - 1) / 2).
   intro x. destruct x as [x' Hx']. simpl.
   split. assert (0 <= (x' - 1) mod ((p - 1) / 2) < (p - 1) / 2).
-  apply mod_pos_bound. omega. omega.
-  assert (0 <= (x' -1) / ((p - 1) / 2)). apply Z_div_pos. omega. omega.
+  apply mod_pos_bound. lia. lia.
+  assert (0 <= (x' -1) / ((p - 1) / 2)). apply Z_div_pos. lia. lia.
   assert ((x' - 1) / ((p - 1) / 2) < (q - 1) / 2). apply Zdiv_lt_upper_bound.
-  omega. rewrite Zmult_comm. omega. omega.
+  lia. rewrite Zmult_comm. lia. lia.
   exists (fun x => exist _
     ((`x - 1) mod ((p - 1) / 2) + 1, (`x - 1) / ((p - 1) / 2) + 1) (H0 x)).
   simpl.
   split.
   intro s. destruct s as [s' Hs']. apply proj1_inj. simpl.
   rewrite Zminus_mod. rewrite Zmult_comm. rewrite Z_mod_plus_full.
-  rewrite <- Zminus_mod. rewrite Zmod_small by omega.
+  rewrite <- Zminus_mod. rewrite Zmod_small by lia.
   assert (fst s' + (snd s' - 1) * ((p - 1) / 2) - 1 = fst s' - 1 + (snd s' - 1) * ((p - 1) / 2)).
-  omega. rewrite H1. rewrite Z_div_plus_full by omega. rewrite Zdiv_small by omega.
-  transitivity (fst s', snd s'). f_equal. omega. omega. symmetry. apply surjective_pairing.
+  lia. rewrite H1. rewrite Z_div_plus_full by lia. rewrite Zdiv_small by lia.
+  transitivity (fst s', snd s'). f_equal. lia. lia. symmetry. apply surjective_pairing.
   intro x. destruct x as [x' Hx']. apply proj1_inj. simpl.
-  assert ((x' - 1) / ((p - 1) / 2) + 1 - 1 = (x' - 1) / ((p - 1) / 2)). omega.
+  assert ((x' - 1) / ((p - 1) / 2) + 1 - 1 = (x' - 1) / ((p - 1) / 2)). lia.
   rewrite H1.
   assert ((x' - 1) mod ((p - 1) / 2) + 1 +
     (p - 1) / 2 * ((x' - 1) / ((p - 1) / 2)) =
           (p - 1) / 2 * ((x' - 1) / ((p - 1) / 2)) + (x' - 1) mod ((p - 1) / 2) + 1).
-  omega. rewrite H2.
-  rewrite <- Z_div_mod_eq. omega. omega.
+  lia. rewrite H2.
+  rewrite <- Z_div_mod_eq. lia. lia.
   assert (Z.to_nat ((p - 1) / 2 * ((q - 1) / 2)) = Z.to_nat ((p - 1) / 2 * ((q - 1) / 2) - 1 + 1)).
-  f_equal. omega. rewrite H0. apply card_interval_full.
+  f_equal. lia. rewrite H0. apply card_interval_full.
   assert (0 * ((q - 1) / 2) <= (p - 1) / 2 * ((q - 1) / 2)). apply Zmult_le_compat_r.
-  omega. omega. omega.
+  lia. lia. lia.
 Qed.
 Let QR5 :
   (Z.to_nat a + Z.to_nat b)%nat = (Z.to_nat (((p - 1) / 2) * ((q - 1) / 2))).
@@ -1550,21 +1551,21 @@ Qed.
 Let QR6 :
   a + b = ((p - 1) / 2) * ((q - 1) / 2).
 Proof.
-  assert (0 <= a). apply EL1. omega. assert (0 <= b). apply EL1. omega.
+  assert (0 <= a). apply EL1. lia. assert (0 <= b). apply EL1. lia.
   rewrite <- Z2Nat.id. rewrite <- Z2Nat.id with (n := a + b). f_equal.
   rewrite Z2Nat.inj_add. apply QR5. auto. auto.
-  generalize H H0. generalize a b. intros. omega.
+  generalize H H0. generalize a b. intros. lia.
   rewrite <- Zmult_0_r with (n := (p - 1) / 2).
-  apply Zmult_le_compat_l. omega. omega.
+  apply Zmult_le_compat_l. lia. lia.
 Qed.
 Theorem Quadratic_reciprocity :
   (legendre p q) * (legendre q p) = (-1) ^ (((p - 1) / 2) * ((q - 1) / 2)).
 Proof.
-  rewrite EL2 with (p_prime := p_prime) (p_odd := p_odd) by (omega || auto).
-  rewrite EL2 with (p_prime := q_prime) (p_odd := q_odd) by (omega || auto).
+  rewrite EL2 with (p_prime := p_prime) (p_odd := p_odd) by (lia || auto).
+  rewrite EL2 with (p_prime := q_prime) (p_odd := q_odd) by (lia || auto).
   rewrite m1_pow_compatible. rewrite <- m1_pow_morphism.
   f_equal. rewrite <- QR6. unfold a. unfold b. auto.
   rewrite <- Zmult_0_r with (n := (p - 1) / 2).
-  apply Zmult_ge_compat_l. omega. omega.
+  apply Zmult_ge_compat_l. lia. lia.
 Qed.
 End Quadratic_reciprocity.
