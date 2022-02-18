@@ -1,6 +1,6 @@
 Require Import Reciprocity.Reciprocity.Finite. Import FiniteTypes.
 Require Import Le. Require Import Lt. Require Import Plus.
-Require Import Omega.
+Require Import Lia.
 Require Import Classical. Require Import ClassicalDescription.
 Require Import Description.
 
@@ -413,12 +413,12 @@ Qed.
 Lemma product_split_ex1 (n m : nat) (k : Fints n) :
   `k < n + m.
 Proof.
-  destruct k as [k' Hk']. simpl. omega.
+  destruct k as [k' Hk']. simpl. lia.
 Qed.
 Lemma product_split_ex2 (n m : nat) (k : Fints m) :
   `k + n < n + m.
 Proof.
-  destruct k as [k' Hk']. simpl. omega.
+  destruct k as [k' Hk']. simpl. lia.
 Qed.
 
 Lemma product_split_n :
@@ -473,8 +473,8 @@ Proof.
   f_equal. rewrite Heqa. unfold choose_bijection. simpl.
   destruct k as [k' Hk']. simpl.
   destruct (excluded_middle_informative (k' + n < n)).
-  omega.
-  f_equal. f_equal. apply proj1_inj. simpl. omega.
+  lia.
+  f_equal. f_equal. apply proj1_inj. simpl. lia.
 Qed.
 
 Variable a : T.
@@ -545,8 +545,8 @@ Lemma disjoint_union_cardinality_sum_n :
 Proof.
   simple induction n.
   intros. rewrite empty_product. exists f. split.
-  intro x. destruct (f x). exfalso. omega.
-  intro y. destruct y. exfalso. omega.
+  intro x. destruct (f x). exfalso. lia.
+  intro y. destruct y. exfalso. lia.
   intros n0 H T f c Hc.
   rewrite product_n.
   assert (cardinality {x : T | f x = Fints_last n0} (c (Fints_last n0))). auto.
@@ -556,7 +556,7 @@ Proof.
   intro x. destruct x as [x' Hx']. simpl.
   assert (proj1_sig (f x') < S n0). destruct (f x'). auto.
   assert (proj1_sig (f x') <> n0). apply proj1_inj_neg in Hx'.
-  unfold Fints_last in Hx'. simpl in Hx'. auto. omega.
+  unfold Fints_last in Hx'. simpl in Hx'. auto. lia.
   apply H with (f := fun x => exist _ (proj1_sig (f `x)) (H1 x)).
   intro k.
   destruct (Hc (Fints_coerce (le_n_Sn n0) k)) as [b Hb].
@@ -572,7 +572,7 @@ Proof.
   apply proj1_inj in He. apply proj1_inj. auto.
   intro y. destruct (Hbsurj y) as [x Hx]. destruct x as [x' Hx'].
   assert (f x' <> Fints_last n0). unfold Fints_last. rewrite Hx'.
-  unfold Fints_coerce. apply proj1_inj_neg. simpl. destruct k. simpl. omega.
+  unfold Fints_coerce. apply proj1_inj_neg. simpl. destruct k. simpl. lia.
   assert (exist _ (proj1_sig (f (proj1_sig (exist _ x' H3)))) (H1 (exist _ x' H3)) = k).
   apply proj1_inj. simpl. rewrite Hx'. unfold Fints_coerce. auto.
   exists (exist _ (exist _ x' H3) H4).

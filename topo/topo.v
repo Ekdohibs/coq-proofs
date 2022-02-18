@@ -662,7 +662,7 @@ Proof.
     apply set_ext; intros x.
     unfold empty; split; [|tauto].
     intros HKx.
-    assert (HK0x : K 0 x) by (eapply subset_decreasing_sequence; [exact Hn| |exact HKx]; firstorder).
+    assert (HK0x : K 0 x) by (eapply subset_decreasing_sequence; [exact Hn| |exact HKx]; apply le_0_n).
     specialize (Hg x HK0x).
     destruct Hg as [t Ht]; apply Ht.
     eapply subset_decreasing_sequence; [exact Hn| |exact HKx].

@@ -1,7 +1,7 @@
 Require Import ClassicalDescription.
 Require Import ProofIrrelevance.
 Require Import Le. Require Import Lt. Require Import Plus.
-Require Import Omega.
+Require Import Lia.
 Module FiniteTypes.
 
 Notation "'If' P 'then' x 'else' y" := 
@@ -381,7 +381,7 @@ Lemma cb_ex (n m : nat) (k : Fints (n + m)) (H : ~ (`k < n)) :
   `k - n < m.
 Proof.
   destruct k as [k' Hk']. simpl in *.
-  omega.
+  lia.
 Qed.
 
 Definition choose_bijection (T : Type) (P : T -> Prop) (n m : nat)
@@ -409,8 +409,8 @@ Proof.
   assert (forall x : T, h' x < n + m).
   intro x. rewrite Heqh'.
   ex_mid_destruct.
-  destruct (f' _). simpl. omega.
-  destruct (g' _). simpl. omega.
+  destruct (f' _). simpl. lia.
+  destruct (g' _). simpl. lia.
   exists (fun x => exist _ (h' x) (H x)).
   split.
   intro x. destruct x as [x' Hx'].
@@ -427,7 +427,7 @@ Proof.
   contradiction.
   assert (exist (fun x : T => ~ P x) y' Hy' = exist (fun x : T => ~ P x) y' n1).
   apply proj1_inj. auto.
-  rewrite <- H0. rewrite Heqy. rewrite Hg. simpl. omega.
+  rewrite <- H0. rewrite Heqy. rewrite Hg. simpl. lia.
   intro y.
   destruct (excluded_middle_informative (P y)).
   simpl in *.
@@ -441,16 +441,16 @@ Proof.
   assert (exist (fun p0 : nat => p0 < n) x' Hx' = exist (fun p0 : nat => p0 < n) x' l0).
   apply proj1_inj. auto.
   rewrite <- H1. rewrite Heqx. rewrite Hf'. auto.
-  destruct (f' _). simpl in H0. omega.
+  destruct (f' _). simpl in H0. lia.
   simpl.
   assert (h' y = proj1_sig (g' (exist _ y n0)) + n).
   rewrite Heqh'. ex_mid_destruct.
   contradiction. f_equal. f_equal. f_equal. apply proj1_inj. auto.
-  ex_mid_destruct. omega.
+  ex_mid_destruct. lia.
   remember (g' _) as x. destruct x as [x' Hx']. simpl in *.
   assert (exist (fun p : nat => p < m) x' Hx' = exist (fun p : nat => p < m) (h' y - n)
        (cb_ex m (exist (fun p : nat => p < n + m) (h' y) (H y)) n1)).
-  apply proj1_inj. simpl. omega.
+  apply proj1_inj. simpl. lia.
   rewrite <- H1. rewrite Heqx. rewrite Hg'. auto.
 Qed.
    
@@ -472,8 +472,8 @@ Proof.
   simple induction n.
   intro. exists 0. exists (fun x => `x).
   split. intros x1 x2 H. destruct x1 as [x1' Hx1'].
-  destruct x1' as [x1'' Hx1'']. omega.
-  intro y. destruct y as [y' Hy']. omega.
+  destruct x1' as [x1'' Hx1'']. lia.
+  intro y. destruct y as [y' Hy']. lia.
   intros n0 H P.
   destruct (H (fun x => P (Fints_coerce (le_n_Sn n0) x))) as [k H'].
   destruct H' as [b Hb]. destruct Hb as [Hbinj Hbsurj].
@@ -481,7 +481,7 @@ Proof.
   exists (S k).
   assert (forall x : Fints (S n0), ~ (x = Fints_last n0) -> `x < n0).
   intros x H1. destruct x as [x' Hx']. unfold Fints_last in H1.
-  apply proj1_inj_neg in H1. simpl in *. omega.
+  apply proj1_inj_neg in H1. simpl in *. lia.
   assert (forall (x : {x : Fints (S n0) | P x}) (U : ~ (`x = Fints_last n0)),
     P (Fints_coerce (le_n_Sn n0) (exist (fun k => k < n0) ``x (H1 `x U)))).
   unfold Fints_coerce. simpl. destruct x as [x' Hx']. destruct x' as [x'' Hx''].
@@ -501,10 +501,10 @@ Proof.
   destruct (excluded_middle_informative (`x2 = Fints_last n0)).
   rewrite <- e0 in e. apply proj1_inj. auto.
   remember (b _) as y. destruct y. unfold Fints_last in He. unfold Fints_coerce in He.
-  apply proj1_inj in He. simpl in He. omega.
+  apply proj1_inj in He. simpl in He. lia.
   destruct (excluded_middle_informative (`x2 = Fints_last n0)).
   remember (b _) as y. destruct y. unfold Fints_last in He. unfold Fints_coerce in He.
-  apply proj1_inj in He. simpl in He. omega.
+  apply proj1_inj in He. simpl in He. lia.
   unfold Fints_coerce in He. apply proj1_inj in He. simpl in He.
   apply proj1_inj in He. apply Hbinj in He. apply proj1_inj in He. simpl in He.
   apply proj1_inj in He. simpl in He. apply proj1_inj in He. apply proj1_inj. auto.
@@ -514,7 +514,7 @@ Proof.
   destruct (excluded_middle_informative (Fints_last n0 = Fints_last n0)).
   unfold Fints_last. apply proj1_inj. auto.
   congruence.
-  assert (y' < k). omega.
+  assert (y' < k). lia.
   destruct (Hbsurj (exist _ y' H3)).
   destruct x as [x' Hx'].
   exists (exist _ (Fints_coerce (le_n_Sn n0) x') Hx').
@@ -529,14 +529,14 @@ Proof.
   apply proj1_inj. auto.
   match goal with [|-context[excluded_middle_informative ?P]] => destruct (excluded_middle_informative P) end.
   destruct x' as [x'' Hx'']. unfold Fints_coerce in e. unfold Fints_last in e.
-  apply proj1_inj in e. simpl in e. omega.
+  apply proj1_inj in e. simpl in e. lia.
   apply proj1_inj. unfold Fints_coerce. simpl. rewrite H5. auto.
   exists k.
   assert (forall x : {x : Fints (S n0) | P x}, ``x < n0).
   destruct x as [x' Hx']. destruct x' as [x'' Hx''].
   assert (x'' <> n0). intro. assert (Fints_last n0 = exist _ x'' Hx'').
    unfold Fints_last. apply proj1_inj. auto. rewrite H2 in H0. contradiction.
-  simpl. omega.
+  simpl. lia.
   assert (forall x : {x : Fints (S n0) | P x}, P (Fints_coerce (le_n_Sn n0) (exist _ ``x (H1 x)))).
   intro x. destruct x as [x' Hx']. unfold Fints_coerce. simpl.
   assert (x' = exist (fun p : nat => p < S n0) `x'
